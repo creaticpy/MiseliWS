@@ -1,0 +1,38 @@
+{% load js_functions %}
+<div class="demo-html">
+    <div id="example_wrapper" class="dataTables_wrapper">
+        <table id="{% simple_tag_uuid %}" class="display dataTable" style="width: 100%;"
+               aria-describedby="example_info">
+            <thead>
+            <tr>
+                <th class="sorting sorting_asc" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                    style="width: 58px;" aria-sort="ascending"
+                    aria-label="Position: activate to sort column descending">id
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 150px;"
+                    aria-label="Position: activate to sort column ascending">cliente
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 123px;"
+                    aria-label="Position: activate to sort column ascending">tipo documento
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 120px;"
+                    aria-label="Position: activate to sort column ascending">fecha documento
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 150px;"
+                    aria-label="Position: activate to sort column ascending">nro documento
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 8px;"
+                    aria-label="Office: activate to sort column ascending">Cotizacion
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 8px;"
+                    aria-label="Position: activate to sort column ascending">
+                </th>
+                <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1" style="width: 8px;"
+                    aria-label="Office: activate to sort column ascending">
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+

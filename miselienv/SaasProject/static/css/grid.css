@@ -1,0 +1,100 @@
+{% load static%}
+.ccontenedorindex {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    grid-template-areas:    "head   head        head"
+                            "menu   contenido   contenido"
+                            "menu   contenido   contenido"
+                            "menu   contenido   contenido"
+                            "footer footer      footer";
+    grid-template-rows: 60px repeat(3, 1fr) 100px;
+    align-items: center;
+    align-content: center;
+    width: 100vw;
+    height: 100vh;
+    /*background-image: url('/static/img/silverbackground.jpg');*/
+
+}
+
+.chead {
+    grid-area: head;
+    display: grid;
+    border-bottom: solid #2394F2 1px;
+    height: 100%;
+    justify-content: right;
+    align-items: flex-end;
+    padding-right: 10%;
+
+}
+
+.chead .llamanos {
+    margin-left: 10%;
+    font-size: 0.9rem;
+}
+
+.chead .cnav {
+    min-height: max-content;
+}
+
+.chead ul {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 1vw;
+    justify-content: right;
+    padding-top: 1px;
+    margin-right: 3vw;
+}
+
+.chead>nav>ul>li {
+    border-right: solid black 0.5px;
+    padding: 0px 10px 0px 10px;
+    text-transform: uppercase;
+}
+
+.chead>nav>ul>li:last-child {
+    border-right: 0px;
+}
+
+.clogo {
+    display: flex;
+    justify-content: center;
+    grid-area: logo;
+}
+
+.clogo img {
+    max-width: 25vw;
+}
+
+.ccontenido {
+    grid-area: contenido;
+    display: flex;
+    border-left: solid .06rem #2394F2;
+    background-color: white;
+    height: 90%;
+    width: 100%;
+    justify-content: center;
+
+}
+
+.ccontenido .cportada{
+    border: #ff000c solid 1px;
+
+}
+
+.ccontenido img {
+    max-width: 100vw;
+    border: yellow solid 2px;
+}
+
+.cmenu{
+    grid-area: menu;
+    height: 100%;
+
+}
+
+.cfooter {
+    grid-area: footer;
+
+    height: 100%;
+}

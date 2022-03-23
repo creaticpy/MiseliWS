@@ -1,0 +1,127 @@
+<nav class="navbar navbar-default" id="{{ nav_uuid }}">
+    <div class="container-fluid">
+        <div class="navbar-fixed-bottom">
+            <button class="btn btn-primary" onclick="_record.saveForm('form_{{ form_uuid }}', {{ reverse }}  );">
+                Guardar
+            </button>
+            <button class="btn btn-danger" onclick="_record.delete('form_{{ form_uuid }}', {{ reverse }});">
+                Cancelar
+            </button>
+
+
+        </div>
+    </div>
+</nav>
+
+<section id="form_{{ section_uuid }}">
+    <div class="container pt-5 pb-5">
+        <h3 class="text-capitalize">Facturas</h3>
+        <form id="form_{{ form_uuid }}" method="post" action="#" class="row g-3 ">
+            <input type="hidden" value="{{ datos.id }}" name="pk">
+
+            <div class="form-group">
+                <label>tip documento</label>
+                <input class="form-control" type="text" name="tip documento"
+                       value="{{ datos.tip_documento }}" placeholder="Tipo Documento">
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2" for="inputState">Nro Documento</label>
+                <div class="col-md-2">
+                    <input id="" class="form-control" type="text" name="nro_documento"
+                           value="{{ datos.nro_documento }}" placeholder="Nro Documento">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="inputState" class="col-md-2">Cotizacion</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="text" name="cotizacion"
+                           value="{{ datos.cotizacion }}" placeholder="Cotizacion">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="inputState">periodo</label>
+                <input class="form-control" type="text" name="periodo" value="{{ datos.periodo }}"
+                       placeholder="Periodo">
+            </div>
+
+            <div class="form-group">
+                <label for="inputState">mes</label>
+                <input class="form-control" type="text" name="mes" value="{{ datos.mes }}"
+                       placeholder="Mes">
+            </div>
+
+            <div class="form-group">
+                <label for="inputState">fecha documento</label>
+                <input class="form-control" type="text" name="fecha documento"
+                       value="{{ datos.fecha_documento }}" placeholder="Fecha Documento">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">fecha transaccion</label>
+                <input class="form-control" type="text" name="fecha transaccion"
+                       value="{{ datos.fecha_transaccion }}" placeholder="Fecha Transaccion">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">Observaciones</label>
+                <input class="form-control" type="text" name="observaciones"
+                       value="{{ datos.observaciones }}" placeholder="Observaciones">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">Monto mon local</label>
+                <input class="form-control" type="text" name="monto moneda local"
+                       value="{{ datos.monto_mon_local }}">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">ruc</label>
+                <input class="form-control" type="text" name="ruc" value="{{ datos.ruc }}">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">razon social</label>
+                <input class="form-control" type="text" name="razon social"
+                       value="{{ datos.razon_social }}">
+            </div>
+
+            <div class="form-group">
+                <label for="inputState">cliente</label>
+                <input class="form-control" type="text" name="cliente" value="{{ datos.cliente }}">
+            </div>
+            <div class="form-group">
+                <label for="inputState">conf cuotas</label>
+                <input class="form-control" type="text" name="conf cuotas"
+                       value="{{ datos.conf_cuotas }}">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">dep origen</label>
+                <input class="form-control" type="text" name="deposito origen"
+                       value="{{ datos.dep_origen }}">
+            </div>
+
+            <div class="form-group">
+                <label for="inputState">moneda</label>
+                <input class="form-control" type="text" name="moneda" value="{{ datos.moneda }}">
+            </div>
+
+
+            <div class="form-group">
+                <label for="inputState">dep origen</label>
+                <input class="form-control" type="text" name="deposito origen"
+                       value="{{ datos.dep_origen }}">
+            </div>
+
+        </form>
+    </div>
+</section>
