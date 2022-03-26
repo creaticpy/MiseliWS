@@ -68,7 +68,7 @@ class FacturasView(LoginRequiredMixin, ListView):
                 "cols": cols,
                 "plantilla": loader.render_to_string(template_name),
             }
-            print("a")
+
             return JsonResponse(context)
 
         inicio = int(request.GET.get('inicio'))
@@ -79,8 +79,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         list_data = []
 
         for indice, valor in enumerate(data[inicio:inicio + fin], inicio):
-            valor["fecha_documento"] = datetime.datetime.strptime(str(valor["fecha_documento"]), "%Y-%m-%d").strftime(
-                "%d-%m-%Y")
+            # valor["fecha_documento"] = valor["fecha_documento"].strftime("%d/%m/%Y")
             list_data.append(valor)
 
         context = {
@@ -102,6 +101,7 @@ class FacturasView(LoginRequiredMixin, ListView):
 
             fact = FacturasModel.objects.get(pk=params['pk'])
 
+
         context = {
             'datos': fact,
             'uuid': uuid.uuid4(),
@@ -110,7 +110,7 @@ class FacturasView(LoginRequiredMixin, ListView):
             'nav_uuid': uuid.uuid4(),
             'reverse': reverse,
         }
-        print("f")
+
         return render(request, template_name, context)
 
     def modificar(request):
