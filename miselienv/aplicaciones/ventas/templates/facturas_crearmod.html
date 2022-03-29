@@ -1,8 +1,7 @@
 <nav class="navbar navbar-default" id="{{ nav_uuid }}">
     <div class="container-fluid">
         <div class="navbar-fixed-bottom">
-            {#            <button form="form_{{ form_uuid }}" class="btn btn-primary" type="submit">#}
-            <button class="btn btn-primary" onclick="_record.saveForm('form_{{ form_uuid }}', {{ reverse }}  );">
+            <button class="btn btn-primary" onclick="serialize('form_{{ form_uuid }}');">
                 Guardar
             </button>
             <button class="btn btn-warning" onclick="_record.delete('form_{{ form_uuid }}', {{ reverse }});">
@@ -21,17 +20,21 @@
 
             <div class="row">
                 <div class="col">
-                    <label for="form_{{ form_uuid }}_tip_documento" class="control-label col-md-2">Tipo Documento
-                        :</label>
+
+                    <label for="form_{{ form_uuid }}_tip_documento" class="control-label">Tipo Documento :</label>
+
                     <div class="col-md-1">
-                        <input id="form_{{ form_uuid }}_tip_documento" class="form-control" type="text" required
-                               name="tip documento" value="{{ datos.tip_documento }}" placeholder="Tipo Documento">
+                        <input id="form_{{ form_uuid }}_tip_documento" class="form-control saas-values" type="text"
+                               required
+                               name="tip_documento" value="{{ datos.tip_documento }}" placeholder="Tipo Documento">
                     </div>
                 </div>
                 <div class="col">
                     <label for="form_{{ form_uuid }}_nro_documento" class="control-label col-md-2">Nro Documento</label>
                     <div class="col-md-2">
-                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control" type="text" required
+                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control text-end saas-values"
+                               type="text"
+                               required
                                name="nro_documento"
                                value="{{ datos.nro_documento }}" placeholder="Nro Documento">
                     </div>
@@ -44,7 +47,8 @@
                 <div class="col">
                     <label for="form_{{ form_uuid }}_cliente" class="control-label">cliente</label>
                     <div class="col-md-auto">
-                        <input id="form_{{ form_uuid }}_cliente" class="form-control" type="text" name="cliente"
+                        <input id="form_{{ form_uuid }}_cliente" class="form-control saas-values" type="text"
+                               name="cliente"
                                value="{{ datos.cliente }}">
                     </div>
                 </div>
@@ -52,8 +56,8 @@
                 <div class="col">
                     <label for="form_{{ form_uuid }}_razon_social" class="control-label">razon social</label>
                     <div class="col-md-auto">
-                        <input id="form_{{ form_uuid }}_razon_social" class="form-control" type="text"
-                               name="razon social"
+                        <input id="form_{{ form_uuid }}_razon_social" class="form-control saas-values" type="text"
+                               name="razon_social"
                                value="{{ datos.razon_social }}">
                     </div>
                 </div>
@@ -61,7 +65,7 @@
                 <div class="col">
                     <label for="form_{{ form_uuid }}_ruc" class="control-label">ruc</label>
                     <div class="col-md-5">
-                        <input id="form_{{ form_uuid }}_ruc" class="form-control" type="text" name="ruc"
+                        <input id="form_{{ form_uuid }}_ruc" class="form-control saas-values" type="text" name="ruc"
                                value="{{ datos.ruc }}">
                     </div>
                 </div>
@@ -72,7 +76,8 @@
                 <div class="col">
                     <label for="form_{{ form_uuid }}_cotizacion" class="control-label col-md-1">Cotizacion</label>
                     <div class="col-md-3">
-                        <input id="form_{{ form_uuid }}_cotizacion" class="form-control" type="text" name="cotizacion"
+                        <input id="form_{{ form_uuid }}_cotizacion" class="form-control saas-values" type="text"
+                               name="cotizacion"
                                value="{{ datos.cotizacion }}" placeholder="Cotizacion">
                     </div>
                 </div>
@@ -80,15 +85,16 @@
                     <label for="form_{{ form_uuid }}_fecha_documento" class="control-label">fecha documento</label>
                     <div class="col-md-6">
 
-                        <input id="form_{{ form_uuid }}_fecha_documento" class="form-control" type="text"
-                               name="fecha documento" required
+                        <input id="form_{{ form_uuid }}_fecha_documento" class="form-control saas-values" type="text"
+                               name="fecha_documento" required
                                value="{{ datos.fecha_documento|date:"d/m/Y" }}" placeholder="Fecha Documento">
                     </div>
                 </div>
                 <div class="col">
                     <label for="form_{{ form_uuid }}_periodo" class="control-label">periodo</label>
                     <div class="col-md-5">
-                        <input id="form_{{ form_uuid }}_periodo" class="form-control" type="number" min="0" readonly
+                        <input id="form_{{ form_uuid }}_periodo" class="form-control saas-values" type="number" min="0"
+                               readonly
                                name="periodo"
                                value="{{ datos.periodo }}"
                                placeholder="Periodo">
@@ -98,7 +104,7 @@
                     <label for="form_{{ form_uuid }}_mes" class="control-label col-md-1">mes</label>
                     <div class="col-md-3">
 
-                        <input id="form_{{ form_uuid }}_mes" class="form-control" type="number" min="0"
+                        <input id="form_{{ form_uuid }}_mes" class="form-control saas-values" type="number" min="0"
                                readonly
                                name="mes"
                                value="{{ datos.mes }}" placeholder="Mes">
@@ -108,8 +114,8 @@
                 <div class="col">
                     <label for="form_{{ form_uuid }}_fecha_transaccion" class="control-label">fecha transaccion</label>
                     <div class="col-md-6">
-                        <input id="form_{{ form_uuid }}_fecha_transaccion" class="form-control" type="text"
-                               name="fecha transaccion"
+                        <input id="form_{{ form_uuid }}_fecha_transaccion" class="form-control saas-values" type="text"
+                               name="fecha_transaccion"
                                value="{{ datos.fecha_transaccion|date:"d/m/Y" }}" placeholder="Fecha Transaccion">
                     </div>
                 </div>
@@ -121,17 +127,22 @@
                     <label for="form_{{ form_uuid }}_monto_mon_local" class="control-label">Monto mon local</label>
                     <div class="col-md-6">
 
-                        <input id="form_{{ form_uuid }}_monto_mon_local" class="form-control" type="text"
-                               name="monto moneda local"
+                        <input id="form_{{ form_uuid }}_monto_mon_local" class="form-control text-end saas-values"
+                               type="text"
+                               name="monto_mon_local"
                                value="{{ datos.monto_mon_local }}">
                     </div>
                 </div>
 
 
                 <div class="col">
-                    <label for="form_{{ form_uuid }}_conf_cuotas" class="control-label">conf cuotas</label>
-                    <input id="form_{{ form_uuid }}_conf_cuotas" class="form-control" type="text" name="conf cuotas"
-                           value="{{ datos.conf_cuotas }}">
+                    <div class="col-md-3">
+                        <label for="form_{{ form_uuid }}_conf_cuotas" class="control-label">conf cuotas</label>
+
+                        <input id="form_{{ form_uuid }}_conf_cuotas" class="form-control saas-values" type="text"
+                               name="conf_cuotas"
+                               value="{{ datos.conf_cuotas }}">
+                    </div>
                 </div>
 
 
@@ -139,8 +150,8 @@
                     <label for="form_{{ form_uuid }}_dep_origen" class="control-label">dep origen</label>
                     <div class="col-md-4">
 
-                        <input id="form_{{ form_uuid }}_dep_origen" class="form-control" type="text"
-                               name="deposito origen"
+                        <input id="form_{{ form_uuid }}_dep_origen" class="form-control saas-values" type="text"
+                               name="dep_origen"
                                value="{{ datos.dep_origen }}">
                     </div>
                 </div>
@@ -149,14 +160,16 @@
                     <label for="form_{{ form_uuid }}_moneda" class="control-label">moneda</label>
                     <div class="col-md-6">
 
-                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control" type="text" name="moneda"
+                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control saas-values" type="text"
+                               name="moneda"
                                value="{{ datos.moneda }}">
                     </div>
                 </div>
             </div>
             <div class="col">
                 <label for="form_{{ form_uuid }}_observaciones" class="control-label">Observaciones</label>
-                <input id="form_{{ form_uuid }}_observaciones" class="form-control" type="text" name="observaciones"
+                <input id="form_{{ form_uuid }}_observaciones" class="form-control saas-values" type="text"
+                       name="observaciones"
                        value="{{ datos.observaciones }}" placeholder="Observaciones">
             </div>
         </form>
