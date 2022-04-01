@@ -5,8 +5,9 @@ app_name = 'ventas'
 
 urlpatterns = [
     path('ventas/facturas', FacturasView.consultas, name='consultas_facturas'),
-    path('ventas/crear_modificar_facturas', FacturasView.nuevo_modificar, name='nuevo_modificar_facturas'),
-    path('ventas/modificar_facturas', FacturasView.modificar, name='modificacion_facturas'),
+    path('ventas/agregar_facturas', FacturasView.agregar, name='agregar_facturas'),
+    path('ventas/guardar_facturas', FacturasView.guardar, name='guardar_facturas'),
+    path('ventas/modificar_facturas', FacturasView.modificar, name='modificar_facturas'),
     path('ventas/borrar_facturas', FacturasView.borrar, name='borrado_facturas'),
 
 

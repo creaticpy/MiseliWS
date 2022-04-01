@@ -22,4 +22,28 @@ function serialize(form_id) {
     // return obj
 }
 
+function guardarformulario(id, form_id, url) {
 
+    console.log(url, "esto es url")
+
+
+    let datos = serialize(form_id)
+    let csrf = JSON.parse(datos)['csrfmiddlewaretoken']
+
+    axios({
+        method: 'post',
+        url: url,
+        data: datos,
+        headers: {
+            "X-CSRFToken": csrf,
+            "content-type": "application/json"
+        }
+    })
+        .then(function (respuesta) {
+
+            console.log(respuesta)
+
+        }).catch(function (err) {
+        console.log(err)
+    })
+}

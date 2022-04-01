@@ -60,13 +60,12 @@ SHARED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
-    'import_export',
+    'crispy_forms',
+    'crispy_bootstrap5',
 
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
-    'rest_framework',
-    'rest_framework.authtoken',
 
 
 )
@@ -80,13 +79,12 @@ TENANT_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
-    'import_export',
+    'crispy_forms',
+    'crispy_bootstrap5',
 
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
-    'rest_framework',
-    'rest_framework.authtoken',
 
     # your tenant-specific apps
     'core',
@@ -100,6 +98,7 @@ TENANT_APPS = (
     'aplicaciones.ventas',
 )
 
+
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 TENANT_MODEL = "clientessaas.Client"  # app.Model
@@ -109,6 +108,9 @@ TENANT_DOMAIN_MODEL = "clientessaas.Domain"  # app.Model
 SHOW_PUBLIC_IF_NO_TENANT_FOUND = True
 
 SITE_ID = 1
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django_tenants.middleware.main.TenantMainMiddleware',  # AGREGADO PARA TENANTS

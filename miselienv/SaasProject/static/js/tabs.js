@@ -37,14 +37,21 @@ function crear_tab(origenes, evento) {
         element = evento.target
         tab_text = element.textContent
     } else if (origenes === "datatables") {
-        if (evento.target.tagName === 'I') {
+        if (evento.target.tagName === 'I' || evento.target.tagName === 'SPAN') {
             element = evento.target.parentNode
+            if (element.tagName !== 'BUTTON'){
+                console.log("Esta es una exception, debemos tratarla")
+                return
+            }
         } else if (evento.target.tagName === 'BUTTON') {
             element = evento.target
         } else {
             return
         }
-        if (element.classList.contains('editar')) {
+        if (element.classList.contains('agregar')) {
+            tab_text = element.attributes.tab_text.value
+            console.log("apretaste Agregar")
+        } else if (element.classList.contains('editar')) {
             tab_text = element.attributes.tab_text.value
             console.log("apretaste Editar")
         } else if (element.classList.contains("eliminar")) {
@@ -95,7 +102,7 @@ function crear_tab(origenes, evento) {
                     let cols = resp.data["cols"]
                     block.innerHTML = resp.data["plantilla"]
                     let tabla = block.getElementsByTagName("table")
-                    load_tables(dir_url, cols, tabla.item(0).id)
+                    load_tables(dir_url, cols, tabla.item(0).id, resp.data['url_agregar_registro'], block)
 
 
                 }).catch(function (err) {
@@ -148,7 +155,7 @@ function cerrar_tab() {
     }
 }
 
-function load_tables(dir_url, cols, id_tabla) {
+function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block) {
 
     let datatable = $('#' + id_tabla).DataTable({
         "aoColumnDefs": [{"sClass": "dpass", "aTargets": [0]}],
@@ -174,9 +181,23 @@ function load_tables(dir_url, cols, id_tabla) {
                 }
             )
         },
-        "columns": cols
+        "columns": cols,
+        "dom": 'Bfrtip',
+        "buttons": [
+            {
+                text: "Agregar",
+                attr: {href: '#', url: url_agregar_registro, tab_text: "Cargar Facturas"},
+                className: "agregar"
+                // action: function (e, dt, node, config) {
+                //     crear_tab("boton_agregar", id_tabla)
+                // }
 
+            }
+        ]
     })
+
+    let item = block.getElementsByClassName('dt-buttons').item(0).getElementsByClassName('agregar').item(0)
+    item.addEventListener('click', crear_tab.bind(Event, 'datatables'))
 
 
     //funciona correctamente, vamos a ver de usar otro metodo

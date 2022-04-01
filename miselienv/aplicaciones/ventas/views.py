@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.views.generic import ListView
 
+from .forms import FacturasForm
 from .models import FacturasModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
@@ -30,6 +31,7 @@ class FacturasView(LoginRequiredMixin, ListView):
     def consultas(request):
         template_name = 'facturas_ld.html'
         tabla_creada = ""
+        url_agregar_registro = "ventas/agregar_facturas"
 
         def get_queryset(filtro, order_by):
             qs = FacturasModel.objects.all()
@@ -61,12 +63,15 @@ class FacturasView(LoginRequiredMixin, ListView):
                 {"data": "fecha_documento"},
                 {"data": "nro_documento"},
                 {"data": "cotizacion"},
-                {"defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='ventas/crear_modificar_facturas' tab_text='Mod Facturas'><i class='fa bi-pencil-square'></i></button>"},
-                {"defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='ventas/borrar_facturas' tab_text='Elim Facturas' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
+                {
+                    "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='ventas/modificar_facturas' tab_text='Mod Facturas'><i class='fa bi-pencil-square'></i></button>"},
+                {
+                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='ventas/borrar_facturas' tab_text='Elim Facturas' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
             ]
             context = {
                 "cols": cols,
                 "plantilla": loader.render_to_string(template_name),
+                "url_agregar_registro": url_agregar_registro,
             }
 
             return JsonResponse(context)
@@ -79,7 +84,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         list_data = []
 
         for indice, valor in enumerate(data[inicio:inicio + fin], inicio):
-            # valor["fecha_documento"] = valor["fecha_documento"].strftime("%d/%m/%Y")
+            valor["fecha_documento"] = valor["fecha_documento"].strftime("%d/%m/%Y")
             list_data.append(valor)
 
         context = {
@@ -89,29 +94,81 @@ class FacturasView(LoginRequiredMixin, ListView):
         # todo default es llamado cuando un parametro no es convertido a json entonces se lo convierte a str y luego se reprocesa
         return HttpResponse(json.dumps(context, default=myconverter), 'application/json')
 
-    def nuevo_modificar(request):
+    def agregar(request):
         template_name = 'facturas_crearmod.html'
         reverse = " url 'core:index'"
 
-        params = request.GET
-
-        fact = FacturasModel()
-
-        if params['pk'] != 'false':
-
-            fact = FacturasModel.objects.get(pk=params['pk'])
-
-
-        context = {
-            'datos': fact,
+        data = {
+            'form': FacturasForm(),
             'uuid': uuid.uuid4(),
             'form_uuid': uuid.uuid4(),
             'section_uuid': uuid.uuid4(),
             'nav_uuid': uuid.uuid4(),
+            'url_guardar': 'ventas/guardar_facturas',
             'reverse': reverse,
         }
 
-        return render(request, template_name, context)
+        return render(request, template_name, data)
+
+    def guardar(request):
+        print(request.method, "esto es request.method")
+        template_name = 'facturas_crearmod.html'
+        data = {
+            'form': FacturasForm()
+        }
+
+        if request.method == 'POST':
+            print("entro pio aqui?¡???????")
+
+            formulario = FacturasForm(data=request.POST, files=request.FILES)
+            print("entro pio aqui o aqui?¡???????", request.POST)
+            if formulario.is_valid():
+                print("entro pio aqui o aqui ooooooooo aqui??¡???????", formulario)
+                formulario.save()
+                data['mensaje'] = "Guardado Correctamente"
+            else:
+                data['form'] = formulario
+
+        return render(request, template_name, data)
+
+    # def nuevo_modificar(request):
+    #     template_name = 'facturas_crearmod.html'
+    #     reverse = " url 'core:index'"
+    #
+    #     params = request.GET
+    #
+    #     fact = FacturasModel()
+    #     adsf = FacturasModel()
+    #     print(adsf._meta.__class__)
+    #
+    #     for x in adsf._meta.__dict__:
+    #         print(x)
+    #         print(x)
+    #     # for x in adsf._meta.local_fields:
+    #     #     aaaa.append(x.name)
+    #     #     print(x.name)
+    #     #     print(x)
+    #
+    #
+    #
+    #
+    #     # print(list(adsf.__dict__.keys()), "esto es dict keys()")
+    #     # print(list(adsf.__dict__), "esto es dict")
+    #     if params['pk'] != 'false':
+    #
+    #         fact = FacturasModel.objects.get(pk=params['pk'])
+    #
+    #
+    #     context = {
+    #         'datos': fact,
+    #         'uuid': uuid.uuid4(),
+    #         'form_uuid': uuid.uuid4(),
+    #         'section_uuid': uuid.uuid4(),
+    #         'nav_uuid': uuid.uuid4(),
+    #         'reverse': reverse,
+    #     }
+    #
+    #     return render(request, template_name, context)
 
     def modificar(request):
         context = {

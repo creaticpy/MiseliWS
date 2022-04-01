@@ -97,7 +97,7 @@ class DocumentosModel(PeriodosModel):
 
 #  todo siempre dep_origen indica salida de articulo, siempre dep_destino indica  entrada de articulo
 class CabMovArticulosModel(DocumentosModel):
-    dep_origen = models.ForeignKey('stock.SubDepositoModel', default=1, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, related_name='%(app_label)s_%(class)sorig')
+    dep_origen = models.ForeignKey('stock.SubDepositoModel', default=1, blank=True, null=True, verbose_name="Deposito", on_delete=settings.DB_ON_DELETE_TRANS, related_name='%(app_label)s_%(class)sorig')
     dep_destino = models.ForeignKey('stock.SubDepositoModel',default=1, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, related_name='%(app_label)s_%(class)sdest')
     observaciones = models.CharField(max_length=1000, blank=True, null=True)
 

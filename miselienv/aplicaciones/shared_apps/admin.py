@@ -2,21 +2,21 @@ from aplicaciones.shared_apps.models import MenusSistemaModel
 from aplicaciones.shared_apps.models import RucsModel, SubMenusSistemasModel, ClasificacionesMenusModel
 from aplicaciones.shared_apps.models import PaisModel, ModulosSistemaModel, TipDocumentoDetModel, TipDocumentoModel
 from django.contrib import admin
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
+# from import_export import resources
+# from import_export.admin import ImportExportModelAdmin
 
 
 admin.site.register(PaisModel)
 
 
-class ClasificacionesMenusResource(resources.ModelResource):
-    class Meta:
-        model = ClasificacionesMenusModel
+# class ClasificacionesMenusResource(resources.ModelResource):
+#     class Meta:
+#         model = ClasificacionesMenusModel
 
 
-@admin.register(ClasificacionesMenusModel)
-class ClasificacionesMenusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    resource_class = ClasificacionesMenusResource
+# @admin.register(ClasificacionesMenusModel)
+# class ClasificacionesMenusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+#     resource_class = ClasificacionesMenusResource
 
 
 class InLineSubMenusSistemaAdmin(admin.TabularInline):

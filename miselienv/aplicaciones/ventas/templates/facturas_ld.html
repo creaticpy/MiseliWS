@@ -1,6 +1,6 @@
 {% load js_functions %}
 <div class="demo-html">
-    <div id="example_wrapper" class="dataTables_wrapper">
+    <div id="example_wrapper_{% simple_tag_uuid %}" class="dataTables_wrapper">
         <table id="{% simple_tag_uuid %}" class="display dataTable" style="width: 100%;"
                aria-describedby="example_info">
             <thead>

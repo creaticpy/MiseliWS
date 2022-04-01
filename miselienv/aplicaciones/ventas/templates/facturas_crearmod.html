@@ -1,177 +1,194 @@
-<nav class="navbar navbar-default" id="{{ nav_uuid }}">
-    <div class="container-fluid">
-        <div class="navbar-fixed-bottom">
-            <button class="btn btn-primary" onclick="serialize('form_{{ form_uuid }}');">
-                Guardar
-            </button>
-            <button class="btn btn-warning" onclick="_record.delete('form_{{ form_uuid }}', {{ reverse }});">
-                Cancelar
-            </button>
-        </div>
-    </div>
-</nav>
+{% load crispy_forms_tags %}
+{% load js_functions %}
 
-<section id="form_{{ section_uuid }}">
-    <div class=".container-fluid">
-        <h3 class="text-center">Facturas</h3>
+{% simple_tag_uuid as form_id %}
+{#    {{ datos | crispy }}#}
+<form id="{{ form_id }}" method="post" action="#" class="form-horizontal" formtarget="_self">
+    {% csrf_token %}
+    {% crispy form %}
+    {{ mensaje }}
 
-        <form id="form_{{ form_uuid }}" method="post" action="#" class="form-horizontal">
-            <input type="hidden" value="{{ datos.id }}" name="pk">
+    <button type="button" form="{{ form_id }}" class="btn btn-primary"
+            onclick="guardarformulario(this, '{{ form_id }}', '{{ url_guardar }}')">Guardar
+    </button>
 
-            <div class="row">
-                <div class="col">
-
-                    <label for="form_{{ form_uuid }}_tip_documento" class="control-label">Tipo Documento :</label>
-
-                    <div class="col-md-1">
-                        <input id="form_{{ form_uuid }}_tip_documento" class="form-control saas-values" type="text"
-                               required
-                               name="tip_documento" value="{{ datos.tip_documento }}" placeholder="Tipo Documento">
-                    </div>
-                </div>
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_nro_documento" class="control-label col-md-2">Nro Documento</label>
-                    <div class="col-md-2">
-                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control text-end saas-values"
-                               type="text"
-                               required
-                               name="nro_documento"
-                               value="{{ datos.nro_documento }}" placeholder="Nro Documento">
-                    </div>
-                </div>
-            </div>
+</form>
 
 
-            <div class="row">
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_cliente" class="control-label">cliente</label>
-                    <div class="col-md-auto">
-                        <input id="form_{{ form_uuid }}_cliente" class="form-control saas-values" type="text"
-                               name="cliente"
-                               value="{{ datos.cliente }}">
-                    </div>
-                </div>
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_razon_social" class="control-label">razon social</label>
-                    <div class="col-md-auto">
-                        <input id="form_{{ form_uuid }}_razon_social" class="form-control saas-values" type="text"
-                               name="razon_social"
-                               value="{{ datos.razon_social }}">
-                    </div>
-                </div>
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_ruc" class="control-label">ruc</label>
-                    <div class="col-md-5">
-                        <input id="form_{{ form_uuid }}_ruc" class="form-control saas-values" type="text" name="ruc"
-                               value="{{ datos.ruc }}">
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="row g-2">
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_cotizacion" class="control-label col-md-1">Cotizacion</label>
-                    <div class="col-md-3">
-                        <input id="form_{{ form_uuid }}_cotizacion" class="form-control saas-values" type="text"
-                               name="cotizacion"
-                               value="{{ datos.cotizacion }}" placeholder="Cotizacion">
-                    </div>
-                </div>
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_fecha_documento" class="control-label">fecha documento</label>
-                    <div class="col-md-6">
-
-                        <input id="form_{{ form_uuid }}_fecha_documento" class="form-control saas-values" type="text"
-                               name="fecha_documento" required
-                               value="{{ datos.fecha_documento|date:"d/m/Y" }}" placeholder="Fecha Documento">
-                    </div>
-                </div>
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_periodo" class="control-label">periodo</label>
-                    <div class="col-md-5">
-                        <input id="form_{{ form_uuid }}_periodo" class="form-control saas-values" type="number" min="0"
-                               readonly
-                               name="periodo"
-                               value="{{ datos.periodo }}"
-                               placeholder="Periodo">
-                    </div>
-                </div>
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_mes" class="control-label col-md-1">mes</label>
-                    <div class="col-md-3">
-
-                        <input id="form_{{ form_uuid }}_mes" class="form-control saas-values" type="number" min="0"
-                               readonly
-                               name="mes"
-                               value="{{ datos.mes }}" placeholder="Mes">
-                    </div>
-                </div>
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_fecha_transaccion" class="control-label">fecha transaccion</label>
-                    <div class="col-md-6">
-                        <input id="form_{{ form_uuid }}_fecha_transaccion" class="form-control saas-values" type="text"
-                               name="fecha_transaccion"
-                               value="{{ datos.fecha_transaccion|date:"d/m/Y" }}" placeholder="Fecha Transaccion">
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_monto_mon_local" class="control-label">Monto mon local</label>
-                    <div class="col-md-6">
-
-                        <input id="form_{{ form_uuid }}_monto_mon_local" class="form-control text-end saas-values"
-                               type="text"
-                               name="monto_mon_local"
-                               value="{{ datos.monto_mon_local }}">
-                    </div>
-                </div>
-
-
-                <div class="col">
-                    <div class="col-md-3">
-                        <label for="form_{{ form_uuid }}_conf_cuotas" class="control-label">conf cuotas</label>
-
-                        <input id="form_{{ form_uuid }}_conf_cuotas" class="form-control saas-values" type="text"
-                               name="conf_cuotas"
-                               value="{{ datos.conf_cuotas }}">
-                    </div>
-                </div>
-
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_dep_origen" class="control-label">dep origen</label>
-                    <div class="col-md-4">
-
-                        <input id="form_{{ form_uuid }}_dep_origen" class="form-control saas-values" type="text"
-                               name="dep_origen"
-                               value="{{ datos.dep_origen }}">
-                    </div>
-                </div>
-
-                <div class="col">
-                    <label for="form_{{ form_uuid }}_moneda" class="control-label">moneda</label>
-                    <div class="col-md-6">
-
-                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control saas-values" type="text"
-                               name="moneda"
-                               value="{{ datos.moneda }}">
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <label for="form_{{ form_uuid }}_observaciones" class="control-label">Observaciones</label>
-                <input id="form_{{ form_uuid }}_observaciones" class="form-control saas-values" type="text"
-                       name="observaciones"
-                       value="{{ datos.observaciones }}" placeholder="Observaciones">
-            </div>
-        </form>
-    </div>
-</section>
+{#<nav class="navbar navbar-default" id="{{ nav_uuid }}">#}
+{#    <div class="container-fluid">#}
+{#        <div class="navbar-fixed-bottom">#}
+{#            <button class="btn btn-primary" onclick="serialize('form_{{ form_uuid }}');">#}
+{#                Guardar#}
+{#            </button>#}
+{#            <button class="btn btn-warning" onclick="_record.delete('form_{{ form_uuid }}', {{ reverse }});">#}
+{#                Cancelar#}
+{#            </button>#}
+{#        </div>#}
+{#    </div>#}
+{#</nav>#}
+{##}
+{#<section id="form_{{ section_uuid }}">#}
+{#    <div class=".container-fluid">#}
+{#        <h3 class="text-center">Facturas</h3>#}
+{##}
+{#        <form id="form_{{ form_uuid }}" method="post" action="#" class="form-horizontal">#}
+{#            <input type="hidden" value="{{ datos.id }}" name="pk">#}
+{##}
+{#            <div class="row">#}
+{#                <div class="col">#}
+{##}
+{#                    <label for="form_{{ form_uuid }}_tip_documento" class="control-label">Tipo Documento :</label>#}
+{##}
+{#                    <div class="col-md-1">#}
+{#                        <input id="form_{{ form_uuid }}_tip_documento" class="form-control saas-values" type="text"#}
+{#                               required#}
+{#                               name="tip_documento" value="{{ datos.tip_documento }}" placeholder="Tipo Documento">#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_nro_documento" class="control-label col-md-2">Nro Documento</label>#}
+{#                    <div class="col-md-2">#}
+{#                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control text-end saas-values"#}
+{#                               type="text"#}
+{#                               required#}
+{#                               name="nro_documento"#}
+{#                               value="{{ datos.nro_documento }}" placeholder="Nro Documento">#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{##}
+{#            <div class="row">#}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_cliente" class="control-label">cliente</label>#}
+{#                    <div class="col-md-auto">#}
+{#                        <input id="form_{{ form_uuid }}_cliente" class="form-control saas-values" type="text"#}
+{#                               name="cliente"#}
+{#                               value="{{ datos.cliente }}">#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_razon_social" class="control-label">razon social</label>#}
+{#                    <div class="col-md-auto">#}
+{#                        <input id="form_{{ form_uuid }}_razon_social" class="form-control saas-values" type="text"#}
+{#                               name="razon_social"#}
+{#                               value="{{ datos.razon_social }}">#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_ruc" class="control-label">ruc</label>#}
+{#                    <div class="col-md-5">#}
+{#                        <input id="form_{{ form_uuid }}_ruc" class="form-control saas-values" type="text" name="ruc"#}
+{#                               value="{{ datos.ruc }}">#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{##}
+{#            <div class="row g-2">#}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_cotizacion" class="control-label col-md-1">Cotizacion</label>#}
+{#                    <div class="col-md-3">#}
+{#                        <input id="form_{{ form_uuid }}_cotizacion" class="form-control saas-values" type="text"#}
+{#                               name="cotizacion"#}
+{#                               value="{{ datos.cotizacion }}" placeholder="Cotizacion">#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_fecha_documento" class="control-label">fecha documento</label>#}
+{#                    <div class="col-md-6">#}
+{##}
+{#                        <input id="form_{{ form_uuid }}_fecha_documento" class="form-control saas-values" type="text"#}
+{#                               name="fecha_documento" required#}
+{#                               value="{{ datos.fecha_documento|date:"d/m/Y" }}" placeholder="Fecha Documento">#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_periodo" class="control-label">periodo</label>#}
+{#                    <div class="col-md-5">#}
+{#                        <input id="form_{{ form_uuid }}_periodo" class="form-control saas-values" type="number" min="0"#}
+{#                               readonly#}
+{#                               name="periodo"#}
+{#                               value="{{ datos.periodo }}"#}
+{#                               placeholder="Periodo">#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_mes" class="control-label col-md-1">mes</label>#}
+{#                    <div class="col-md-3">#}
+{##}
+{#                        <input id="form_{{ form_uuid }}_mes" class="form-control saas-values" type="number" min="0"#}
+{#                               readonly#}
+{#                               name="mes"#}
+{#                               value="{{ datos.mes }}" placeholder="Mes">#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_fecha_transaccion" class="control-label">fecha transaccion</label>#}
+{#                    <div class="col-md-6">#}
+{#                        <input id="form_{{ form_uuid }}_fecha_transaccion" class="form-control saas-values" type="text"#}
+{#                               name="fecha_transaccion"#}
+{#                               value="{{ datos.fecha_transaccion|date:"d/m/Y" }}" placeholder="Fecha Transaccion">#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="row">#}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_monto_mon_local" class="control-label">Monto mon local</label>#}
+{#                    <div class="col-md-6">#}
+{##}
+{#                        <input id="form_{{ form_uuid }}_monto_mon_local" class="form-control text-end saas-values"#}
+{#                               type="text"#}
+{#                               name="monto_mon_local"#}
+{#                               value="{{ datos.monto_mon_local }}">#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{##}
+{#                <div class="col">#}
+{#                    <div class="col-md-3">#}
+{#                        <label for="form_{{ form_uuid }}_conf_cuotas" class="control-label">conf cuotas</label>#}
+{##}
+{#                        <input id="form_{{ form_uuid }}_conf_cuotas" class="form-control saas-values" type="text"#}
+{#                               name="conf_cuotas"#}
+{#                               value="{{ datos.conf_cuotas }}">#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_dep_origen" class="control-label">dep origen</label>#}
+{#                    <div class="col-md-4">#}
+{##}
+{#                        <input id="form_{{ form_uuid }}_dep_origen" class="form-control saas-values" type="text"#}
+{#                               name="dep_origen"#}
+{#                               value="{{ datos.dep_origen }}">#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#                <div class="col">#}
+{#                    <label for="form_{{ form_uuid }}_moneda" class="control-label">moneda</label>#}
+{#                    <div class="col-md-6">#}
+{##}
+{#                        <input id="form_{{ form_uuid }}_nro_documento" class="form-control saas-values" type="text"#}
+{#                               name="moneda"#}
+{#                               value="{{ datos.moneda }}">#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col">#}
+{#                <label for="form_{{ form_uuid }}_observaciones" class="control-label">Observaciones</label>#}
+{#                <input id="form_{{ form_uuid }}_observaciones" class="form-control saas-values" type="text"#}
+{#                       name="observaciones"#}
+{#                       value="{{ datos.observaciones }}" placeholder="Observaciones">#}
+{#            </div>#}
+{#        </form>#}
+{#    </div>#}
+{#</section>#}

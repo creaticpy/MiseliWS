@@ -196,8 +196,8 @@ class FacturasModel(CabMovArticulosModel):
     conf_cuotas     = models.ForeignKey(ConfCuotasModel, blank=True, null=True, verbose_name="Cant. cuotas", on_delete=settings.DB_ON_DELETE_TRANS)
     moneda          = models.ForeignKey(MonedaModel, on_delete=settings.DB_ON_DELETE_TRANS, default=1)
     cotizacion      = models.PositiveIntegerField(default=FacturasPrecargas.cotizacion)  # todo por ahora cero, luego debe estirar de la tabla
-    monto_mon_local = models.PositiveIntegerField(default=0)
-    saldo_mon_local = models.PositiveIntegerField(default=0)
+    monto_mon_local = models.PositiveIntegerField(default=0, verbose_name="Monto")
+    saldo_mon_local = models.PositiveIntegerField(default=0, verbose_name="Saldo")
     ruc             = models.CharField(max_length=100, default="")
     razon_social    = models.CharField(max_length=100, default="")
 
