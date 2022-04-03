@@ -3,16 +3,23 @@
 
 {% simple_tag_uuid as form_id %}
 {#    {{ datos | crispy }}#}
-<form id="{{ form_id }}" method="post" action="#" class="form-horizontal" formtarget="_self">
-    {% csrf_token %}
-    {% crispy form %}
+<form id="form_{{ form_id }}" method="post" action="" class="form-horizontal">{% csrf_token %}
+    {#<form id="{{ form_id }}" method="post" action="{{ url_guardar }}" class="form-horizontal" formtarget="_self">  funciona con el mentodo submit#}
+
+
+    {{ form }}
     {{ mensaje }}
 
-    <button type="button" form="{{ form_id }}" class="btn btn-primary"
-            onclick="guardarformulario(this, '{{ form_id }}', '{{ url_guardar }}')">Guardar
-    </button>
+
+    {#    <button type="submit" form="{{ form_id }}" class="btn btn-primary" formenctype="multipart/form-data">#}
+    {#        Guardar funciona correctamente #}
+    {#    </button>#}
+
 
 </form>
+<button type="button" form="form_{{ form_id }}" class="btn btn-primary"
+        onclick="guardarformulario('form_{{ form_id }}', '{{ url_guardar }}')"> Guardar
+</button>
 
 
 {#<nav class="navbar navbar-default" id="{{ nav_uuid }}">#}

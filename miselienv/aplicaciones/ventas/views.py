@@ -4,6 +4,7 @@ import uuid
 
 from django.conf.locale.en import formats as en_formats
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import serializers
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -99,7 +100,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         reverse = " url 'core:index'"
 
         data = {
-            'form': FacturasForm(),
+            'form': FacturasForm,
             'uuid': uuid.uuid4(),
             'form_uuid': uuid.uuid4(),
             'section_uuid': uuid.uuid4(),
@@ -111,23 +112,22 @@ class FacturasView(LoginRequiredMixin, ListView):
         return render(request, template_name, data)
 
     def guardar(request):
-        print(request.method, "esto es request.method")
         template_name = 'facturas_crearmod.html'
-        data = {
-            'form': FacturasForm()
-        }
-
+        data = {}
         if request.method == 'POST':
-            print("entro pio aqui?¡???????")
+            try:
+                csrf = request.POST
+                for key, value in csrf.items():
+                    data = key
+                data = json.loads(data)
 
-            formulario = FacturasForm(data=request.POST, files=request.FILES)
-            print("entro pio aqui o aqui?¡???????", request.POST)
-            if formulario.is_valid():
-                print("entro pio aqui o aqui ooooooooo aqui??¡???????", formulario)
-                formulario.save()
-                data['mensaje'] = "Guardado Correctamente"
-            else:
-                data['form'] = formulario
+                form = FacturasForm(data=data)
+                if form.is_valid():
+                    print("si es valido carajooooooo")
+                    form.save()
+                    data['mensaje'] = "Guardado Correctamente"
+            except Exception as e:
+                print(e)
 
         return render(request, template_name, data)
 

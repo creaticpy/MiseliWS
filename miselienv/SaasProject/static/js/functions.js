@@ -18,32 +18,62 @@ function serialize(form_id) {
     for (let key of formData.keys()) {
         obj[key] = formData.get(key);
     }
+
     return JSON.stringify(obj)
     // return obj
 }
 
-function guardarformulario(id, form_id, url) {
-
-    console.log(url, "esto es url")
+function guardarformulario(form_id, url) {
 
 
-    let datos = serialize(form_id)
-    let csrf = JSON.parse(datos)['csrfmiddlewaretoken']
+    if (document.getElementById(form_id).checkValidity()) {
+        let datos = serialize(form_id)
+        // let csrf = JSON.parse(datos)
+        // csrf = csrf["csrfmiddlewaretoken"]
 
-    axios({
-        method: 'post',
-        url: url,
-        data: datos,
-        headers: {
-            "X-CSRFToken": csrf,
-            "content-type": "application/json"
-        }
-    })
-        .then(function (respuesta) {
+        console.log(typeof (datos), datos, "esto es typeof")
+        //
+        //     axios.post(url, datos)
+        //         .then(function (respuesta) {
+        //             console.log(respuesta, "esta es la respuesta por medio de axios")
+        //         }).catch(function (err) {
+        //         console.log(err)
+        //     })
+        // } else {
+        //     console.log("el formulario no es valido")
+        // }
 
-            console.log(respuesta)
 
-        }).catch(function (err) {
-        console.log(err)
-    })
+        axios({
+            method: 'post',
+            url: url,
+            data: datos
+            // headers: {
+            //     // "X-CSRFToken": datos,
+            //     Accept: "application/json",
+            //     "Content-Type": "application/json;charset=UTF-8",
+            //     // "content-type": "application/x-www-form-urlencoded",
+            //     // "content-type": "application/json",
+            //
+            // }
+        })
+            .then(function (respuesta) {
+
+                // console.log(respuesta, "esta es la respuesta por medio de axios")
+
+            }).catch(function (err) {
+            console.log(err)
+        })
+    } else {
+        console.log("el formulario no es valido")
+    }
+
+
+}
+
+function submitForm(form_id) {
+    console.log("que pasa?")
+    let form = document.getElementById(form_id)
+    console.log(form.checkValidity())
+
 }

@@ -47,14 +47,14 @@
 
         <section class="cfooter">
 
-            <a href="#miModala">Abrir Modal</a>
-            <div id="miModala" class="modala">
-                <div class="modala-contenido">
-                    <a href="#">X</a>
-                    <h2>Mi primer Modal</h2>
-                    <p>Este es mi primera ventana modal sin utilizar JavaScript.</p>
-                </div>
-            </div>
+{#            <a href="#miModala">Abrir Modal</a>#}
+{#            <div id="miModala" class="modala">#}
+{#                <div class="modala-contenido">#}
+{#                    <a href="#">X</a>#}
+{#                    <h2>Mi primer Modal</h2>#}
+{#                    <p>Este es mi primera ventana modal sin utilizar JavaScript.</p>#}
+{#                </div>#}
+{#            </div>#}
 
         </section>
 
@@ -95,31 +95,32 @@
 </style>
 
 <script>
-    $(document).ready(function () {
-            let alert_box = document.getElementById('alert-box')
-
-            function Alerta(type, text) {
-                alert_box.innerHTML += `<div class='alert alert-${type}' role="alert">${text}</div>`
+    {#$(document).ready(function () {#}
+    {#        let alert_box = document.getElementById('alert-box')#}
+    {##}
+    {#        function Alerta(type, text) {#}
+    {#            alert_box.innerHTML += `<div class='alert alert-${type}' role="alert">${text}</div>`#}
                 {#alert_box.innerHTML += `<div class='alert alert-info' role="alert">${text}</div>`#}
                 {#alert_box.innerHTML += `<div class='alert alert-primary' role="alert">${text}</div>`#}
                 {#alert_box.innerHTML += `<div class='alert alert-success' role="alert">${text}</div>`#}
-                setTimeout(BorrarAlerta, 3000)
-            }
+    {#            setTimeout(BorrarAlerta, 3000)#}
+    {#        }#}
+    {##}
+    {#        Alerta("success", "Esto es un texto de pruebas")#}
+    {##}
+    {#        function BorrarAlerta() {#}
+    {#            let hijos = alert_box.querySelectorAll('div')#}
+    {#            hijos.forEach((cada, i) => {#}
+    {#                alert_box.removeChild(hijos.item(i))#}
+    {#            })#}
+    {##}
+    {##}
+    {#        }#}
+    {##}
+    {##}
+    {#    }#}
+    {#)#}
 
-            Alerta("success", "Esto es un texto de pruebas")
-
-            function BorrarAlerta() {
-                let hijos = alert_box.querySelectorAll('div')
-                hijos.forEach((cada, i) => {
-                    alert_box.removeChild(hijos.item(i))
-                })
-
-
-            }
-
-
-        }
-    )
 
 
 </script>
