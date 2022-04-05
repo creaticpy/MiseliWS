@@ -2,9 +2,9 @@ import uuid
 
 from aplicaciones.shared_apps.models import TipDocumentoDetModel
 from aplicaciones.stock.models import SubDepositoModel
-from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field, Row, Column
+from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel, FacturasDetModel
+
+from django.views.generic.edit import FormView
 from django import forms
 from django.utils.timezone import now
 
@@ -30,6 +30,9 @@ class RemisionesForm(forms.ModelForm):
 
 
 class FacturasForm(forms.ModelForm):
+    error_css_class = 'error'
+    required_css_class = 'required'
+
     tip_documento = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(desc_corta="FV"), initial="FV",
                                            label="Tip Doc")
     nro_documento = forms.CharField(label='Nro Documento ', required=True, help_text="Formato: 0010020000123")
@@ -82,4 +85,11 @@ class FacturasForm(forms.ModelForm):
 
     class Meta:
         model = FacturasModel
+        fields = '__all__'
+
+
+class FacturasDetForm(forms.ModelForm):
+
+    class Meta:
+        model = FacturasDetModel
         fields = '__all__'

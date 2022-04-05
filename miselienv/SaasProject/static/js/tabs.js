@@ -39,7 +39,7 @@ function crear_tab(origenes, evento) {
     } else if (origenes === "datatables") {
         if (evento.target.tagName === 'I' || evento.target.tagName === 'SPAN') {
             element = evento.target.parentNode
-            if (element.tagName !== 'BUTTON'){
+            if (element.tagName !== 'BUTTON') {
                 console.log("Esta es una exception, debemos tratarla")
                 return
             }
@@ -93,6 +93,8 @@ function crear_tab(origenes, evento) {
             let menu_id = document.querySelectorAll(`div[menu_id="${element.id}"]`)
             let block = document.getElementById(menu_id.item(0).attributes.id.value)
 
+            itemLi.click()
+
             if (origenes === "menu") {
                 axios.get(dir_url, {
                     params: {tablacreada: "yes"}
@@ -108,9 +110,8 @@ function crear_tab(origenes, evento) {
                 }).catch(function (err) {
                     console.log(err, "Error en Axios Tabs.js =(")
                     alert(err + " - Error en Axios Tabs.js")
-                }).then(function () {
-                    itemLi.click()
                 })
+
             } else if (origenes === "datatables") {
                 let tr = element.parentNode.parentNode
                 let parent = tr.querySelector(".dpass")

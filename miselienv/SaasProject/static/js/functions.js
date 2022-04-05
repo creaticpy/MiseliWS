@@ -47,15 +47,19 @@ function guardarformulario(form_id, url) {
         axios({
             method: 'post',
             url: url,
-            data: datos
-            // headers: {
-            //     // "X-CSRFToken": datos,
-            //     Accept: "application/json",
-            //     "Content-Type": "application/json;charset=UTF-8",
-            //     // "content-type": "application/x-www-form-urlencoded",
-            //     // "content-type": "application/json",
-            //
-            // }
+            data: datos,
+            headers: {
+                //     // "X-CSRFToken": datos,
+                //     Accept: "application/json",
+                //     "Content-Type": "application/json;charset=UTF-8",
+                //      "Content-Type": "multipart/form-data",
+                //       "Content-Type": "text/plain",
+                // "Content-Type": "text/html",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                //     // "content-type": "application/x-www-form-urlencoded",
+                //     // "content-type": "application/json",
+                //
+            }
         })
             .then(function (respuesta) {
 

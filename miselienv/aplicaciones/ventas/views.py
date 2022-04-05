@@ -11,7 +11,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.views.generic import ListView
 
-from .forms import FacturasForm
+from .forms import FacturasForm, FacturasDetForm
 from .models import FacturasModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
@@ -28,6 +28,7 @@ def myconverter(o):
 
 class FacturasView(LoginRequiredMixin, ListView):
     redirect = ""
+
 
     def consultas(request):
         template_name = 'facturas_ld.html'
@@ -114,6 +115,7 @@ class FacturasView(LoginRequiredMixin, ListView):
     def guardar(request):
         template_name = 'facturas_crearmod.html'
         data = {}
+
         if request.method == 'POST':
             try:
                 csrf = request.POST
@@ -123,9 +125,10 @@ class FacturasView(LoginRequiredMixin, ListView):
 
                 form = FacturasForm(data=data)
                 if form.is_valid():
-                    print("si es valido carajooooooo")
                     form.save()
                     data['mensaje'] = "Guardado Correctamente"
+                else:
+                    data['mensaje'] = 'No se que mensaje poner'
             except Exception as e:
                 print(e)
 
