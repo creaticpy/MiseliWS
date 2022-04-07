@@ -4,15 +4,15 @@ import uuid
 
 from django.conf.locale.en import formats as en_formats
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core import serializers
 from django.db.models import Q
+from django.forms import inlineformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 from django.views.generic import ListView
 
-from .forms import FacturasForm, FacturasDetForm
-from .models import FacturasModel
+from .forms import FacturasForm
+from .models import FacturasModel, FacturasDetModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
 
@@ -28,7 +28,6 @@ def myconverter(o):
 
 class FacturasView(LoginRequiredMixin, ListView):
     redirect = ""
-
 
     def consultas(request):
         template_name = 'facturas_ld.html'
@@ -98,19 +97,43 @@ class FacturasView(LoginRequiredMixin, ListView):
 
     def agregar(request):
         template_name = 'facturas_crearmod.html'
-        reverse = " url 'core:index'"
-
-        data = {
-            'form': FacturasForm,
+        InlineFormSet = inlineformset_factory(FacturasModel, FacturasDetModel,
+                                              fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario'))
+        form = FacturasForm(request.POST or None)
+        formset = InlineFormSet(request.POST or None, instance=FacturasModel())
+        print(request.POST, " ESTO ES REQUEST.POST")
+        if form.is_valid():  # and formset.is_valid():
+            print(request.POST, " ESTO ES REQUEST.POST y el formulario es valido")
+            book = form.save()
+            formset.instance = book
+            formset.save()
+            # return redirect('books_pc_formset:home') VAMOS A VER COMO IMPLEMENTAR ESTO........
+        ctx = {
+            'form': form,
+            'formset': formset,
             'uuid': uuid.uuid4(),
             'form_uuid': uuid.uuid4(),
             'section_uuid': uuid.uuid4(),
             'nav_uuid': uuid.uuid4(),
             'url_guardar': 'ventas/guardar_facturas',
-            'reverse': reverse,
         }
+        return render(request, template_name, ctx)
 
-        return render(request, template_name, data)
+    # def agregar(request):
+    #     template_name = 'facturas_crearmod.html'
+    #     reverse = " url 'core:index'"
+    #     # https://github.com/rayed/django-crud-parent-child/blob/master/apps/books_pc_formset2/templates/books_pc_formset2/book_form.html
+    #     data = {
+    #         'form': FacturasForm,
+    #         'uuid': uuid.uuid4(),
+    #         'form_uuid': uuid.uuid4(),
+    #         'section_uuid': uuid.uuid4(),
+    #         'nav_uuid': uuid.uuid4(),
+    #         'url_guardar': 'ventas/guardar_facturas',
+    #         'reverse': reverse,
+    #     }
+    #
+    #     return render(request, template_name, data)
 
     def guardar(request):
         template_name = 'facturas_crearmod.html'

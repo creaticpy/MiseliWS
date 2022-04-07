@@ -24,7 +24,8 @@ function serialize(form_id) {
 }
 
 function guardarformulario(form_id, url) {
-
+    console.log(form_id, "esto es form_id")
+    console.log(url, "esto es url")
 
     if (document.getElementById(form_id).checkValidity()) {
         let datos = serialize(form_id)
@@ -63,7 +64,7 @@ function guardarformulario(form_id, url) {
         })
             .then(function (respuesta) {
 
-                // console.log(respuesta, "esta es la respuesta por medio de axios")
+                console.log(respuesta, "esta es la respuesta por medio de axios")
 
             }).catch(function (err) {
             console.log(err)
