@@ -7,8 +7,7 @@ class FacturasPrecargas:
     @staticmethod
     def cotizacion(v_fecha=None, v_moneda=None):
         if v_fecha and v_moneda:
-            return \
-            CotizacionModel.objects.filter(fecha__lte=v_fecha, moneda=v_moneda).order_by('-fecha').values('venta')[:1].get()['venta']
+            return CotizacionModel.objects.filter(fecha__lte=v_fecha, moneda=v_moneda).order_by('-fecha').values('venta')[:1].get()['venta']
         else:
             return CotizacionModel.objects.filter(fecha__lte=now(), moneda=ConfFinanzasModel.objects
                                                   .values("moneda_secundaria")[:1]

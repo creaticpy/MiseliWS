@@ -16,8 +16,8 @@ personeria = (
 )
 
 estado = (
-    ('A', 'Activo'),
-    ('I', 'Inactivo')
+    ('true',  'Activo'),
+    ('false', 'Inactivo')
 
 )
 

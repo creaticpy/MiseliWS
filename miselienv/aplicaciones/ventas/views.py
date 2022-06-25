@@ -11,7 +11,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.views.generic import ListView
 
-from .forms import FacturasForm
+from .forms import FacturasForm, FacturasDetForm
 from .models import FacturasModel, FacturasDetModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
@@ -97,27 +97,51 @@ class FacturasView(LoginRequiredMixin, ListView):
 
     def agregar(request):
         template_name = 'facturas_crearmod.html'
-        InlineFormSet = inlineformset_factory(FacturasModel, FacturasDetModel,
-                                              fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario'))
-        form = FacturasForm(request.POST or None)
-        formset = InlineFormSet(request.POST or None, instance=FacturasModel())
-        print(request.POST, " ESTO ES REQUEST.POST")
-        if form.is_valid():  # and formset.is_valid():
-            print(request.POST, " ESTO ES REQUEST.POST y el formulario es valido")
-            book = form.save()
-            formset.instance = book
-            formset.save()
-            # return redirect('books_pc_formset:home') VAMOS A VER COMO IMPLEMENTAR ESTO........
+        facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, fk_name='factura',
+                                                  fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
+                                                          'desc_larga',), extra=3, absolute_max=1500)
+        data = {}
+        ctx  = {}
+        formcab = FacturasForm()
+        formdet = facturadetformset()
+
+        if request.method == 'POST':
+            csrf = request.POST
+            for key, value in csrf.items():
+                data = key
+            data = json.loads(data)
+            formcab = FacturasForm(data=data)
+            # print(formcab, "----------------------------------------> esto es formcab")
+            if formcab.is_valid():
+                formcab = formcab.save(commit=False)
+                formdet = facturadetformset(data=data, instance=formcab)
+                print(formdet, "fooooooooooooooooooooooooooooormdet")
+                if formdet.is_valid():
+                    formcab.save()
+                    formdet.save()
+                else:
+                    print(formdet.non_form_errors())
+                    print("NO ES VALIDO---------------------------------------")
+
+            else:
+                print("FORMULARIO INVALIDO")
+                ctx['mensaje'] = 'No se que mensaje poner'
+                # return JsonResponse(ctx)
+
         ctx = {
-            'form': form,
-            'formset': formset,
+            'form': formcab,
+            'formset': formdet,
             'uuid': uuid.uuid4(),
             'form_uuid': uuid.uuid4(),
             'section_uuid': uuid.uuid4(),
             'nav_uuid': uuid.uuid4(),
-            'url_guardar': 'ventas/guardar_facturas',
+            'url_guardar': 'ventas/agregar_facturas',
+            # 'url_guardar': 'ventas/guardar_facturas',
+
         }
+
         return render(request, template_name, ctx)
+
 
     # def agregar(request):
     #     template_name = 'facturas_crearmod.html'
@@ -209,3 +233,88 @@ class FacturasView(LoginRequiredMixin, ListView):
             "plantilla": "loader.render_to_string(template_name)",
         }
         return JsonResponse(context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  # def agregar(request):
+  #       template_name = 'facturas_crearmod.html'
+  #       facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, fk_name='factura',
+  #                                             fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario'), extra=3)
+  #       data = {}
+  #       ctx  = {}
+  #       formcab = FacturasForm(data=data or None)
+  #       formdet = facturadetformset(data=data or None)
+  #       # formdet = facturadetformset(data=data or None, instance=FacturasModel())
+  #
+  #       if request.method == 'POST':
+  #           csrf = request.POST
+  #           for key, value in csrf.items():
+  #               data = key
+  #           data = json.loads(data)
+  #           formcab = FacturasForm(data=data or None)
+  #           formdet = facturadetformset(data=data or None)
+  #           for a in data:
+  #               print(a, "que es esto:-++++++++++++++++++++++++++++++++++++++++++")
+  #
+  #           if formcab.is_valid() and formdet.is_valid():
+  #               print("is valid formdet???????????????????????????????????????????????????????????????")
+  #               factura = formcab.save()
+  #               formdet.save()
+  #
+  #
+  #           else:
+  #               print("no es valid")
+  #               ctx['mensaje'] = 'No se que mensaje poner'
+  #               # return JsonResponse(ctx)
+  #
+  #       ctx = {
+  #           'form': formcab,
+  #           'formset': formdet,
+  #           'uuid': uuid.uuid4(),
+  #           'form_uuid': uuid.uuid4(),
+  #           'section_uuid': uuid.uuid4(),
+  #           'nav_uuid': uuid.uuid4(),
+  #           'url_guardar': 'ventas/agregar_facturas',
+  #           # 'url_guardar': 'ventas/guardar_facturas',
+  #
+  #       }
+  #
+  #       return render(request, template_name, ctx)
+  #
+  #
+  #   # def agregar(request):
+  #   #     template_name = 'facturas_crearmod.html'
+  #   #     reverse = " url 'core:index'"
+  #   #     # https://github.com/rayed/django-crud-parent-child/blob/master/apps/books_pc_formset2/templates/books_pc_formset2/book_form.html
+  #   #     data = {
+  #   #         'form': FacturasForm,
+  #   #         'uuid': uuid.uuid4(),
+  #   #         'form_uuid': uuid.uuid4(),
+  #   #         'section_uuid': uuid.uuid4(),
+  #   #         'nav_uuid': uuid.uuid4(),
+  #   #         'url_guardar': 'ventas/guardar_facturas',
+  #   #         'reverse': reverse,
+  #   #     }
+  #   #
+  #   #     return render(request, template_name, data)

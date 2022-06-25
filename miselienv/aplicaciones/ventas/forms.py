@@ -1,11 +1,8 @@
-import uuid
-
 from aplicaciones.shared_apps.models import TipDocumentoDetModel
 from aplicaciones.stock.models import SubDepositoModel
 from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel, FacturasDetModel
 from base.choices import estado
 
-from django.views.generic.edit import FormView
 from django import forms
 from django.utils.timezone import now
 
@@ -37,11 +34,11 @@ class FacturasForm(forms.ModelForm):
     tip_documento = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(desc_corta="FV"), initial="FV",
                                            label="Tip Doc")
     nro_documento = forms.CharField(label='Nro Documento', required=True, help_text="Formato: 0010020000123")
-    estado = forms.ChoiceField(choices=estado, initial='A')
 
     fecha_documento = forms.DateField(initial=now(), widget=forms.DateInput(attrs={'type': 'date'}))
     fecha_transaccion = forms.DateField(initial=now(), widget=forms.DateInput(attrs={'type': 'date'}))
-    dep_origen = forms.ModelChoiceField(required=True, label="Deposito", queryset=SubDepositoModel.objects.all(), initial="1")
+    dep_origen = forms.ModelChoiceField(required=True, label="Deposito", queryset=SubDepositoModel.objects.all(),
+                                        initial="1")
     cliente = forms.ModelChoiceField(required=True, label="Cliente", queryset=ClientesModel.objects.all(), initial="1")
 
     class Meta:
@@ -51,6 +48,15 @@ class FacturasForm(forms.ModelForm):
         #     'nro_documento': forms.DateInput(attrs={"class": "col-md-6"}),
         # }
 
+    def clean_conf_cuotas(self):
+        conf_cuotas = self.cleaned_data.get("conf_cuotas")
+        print("entro pio por aquiiiiiiii - uqe onda????", conf_cuotas, "------", self.cleaned_data.get("contado_credito"))
+
+        if self.cleaned_data.get("contado_credito") == 'CRED' and not conf_cuotas:
+            raise forms.ValidationError("Debe seleccionar la cantidad de cuotas")
+            print("entro pio por aquiiiiiiii???")
+
+        return conf_cuotas
 
     # cliente   = forms.ModelChoiceField(queryset=ClientesModel.objects.all(), widget=forms.TextInput)
 
@@ -96,7 +102,6 @@ class FacturasForm(forms.ModelForm):
 
 
 class FacturasDetForm(forms.ModelForm):
-
     class Meta:
         model = FacturasDetModel
         fields = '__all__'

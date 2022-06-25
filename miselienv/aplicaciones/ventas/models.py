@@ -213,6 +213,7 @@ class FacturasModel(CabMovArticulosModel):
 
     def clean(self):
         FacturasPrecargas.nextnumber(self.tip_documento)
+
         if not self.nro_documento.isnumeric():
             raise ValidationError('El Nro de documento debe ser completamente numerico')
         if self.tip_documento.tip_documento.id in (1, 2):  # documentos de compra y venta
@@ -235,6 +236,7 @@ class FacturasProxyModel(FacturasModel):
 class FacturasDetModel(MovArticulosDetModel):
     factura             = models.ForeignKey(FacturasModel, on_delete=settings.DB_ON_DELETE_REC)
     remision            = models.ManyToManyField(RemisionesDetModel, through=RemisionesFacturasModel, related_name='remisionesfacturas')
+
     class Meta:
         verbose_name = 'Detalle Factura'
         verbose_name_plural = 'Detalles de Facturas'
