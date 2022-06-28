@@ -8,8 +8,9 @@
         <div class="row" style="min-width: 620px">
             <div class="col-9 d-grid gap-2" style="min-width: 310px">
                 <div class="row g-1 align-items-center ">
-                    <div class="row" style="width: 20%; min-width: 160px;">
-                        {{ form.contado_credito.label }}
+                    <div class="row" style="width: 13%; min-width: 110px;">
+{#                        {{ form.contado_credito.label }}#}
+                        Cont/Cred
                         {{ form.contado_credito }}
                     </div>
                     <div class="row" style="width: 20%; min-width: 160px;">
@@ -28,11 +29,11 @@
 
 
                 <div class="row g-1 align-items-center ">
-                    <div class="row" style="width: 15%; min-width: 80px">
+                    <div class="row" style="width: 13%; min-width: 80px">
                         {{ form.tip_documento.label }}
                         {{ form.tip_documento }}
                     </div>
-                    <div class="row" style="width: 40%; min-width: 200px">
+                    <div class="row" style="width: 20%; min-width: 200px">
                         {{ form.nro_documento.label }}
                         {{ form.nro_documento }}
                     </div>
@@ -97,6 +98,7 @@
     <h3><strong>Detalle</strong></h3>
     {{ formset.non_form_errors.as_ul }}
     <table id="formset" class="form">
+        {{ formset.management_form }} {# Nooooooooooo olvidar esta linea #}
         {% for form in formset.forms %}
             {% if forloop.first %}
                 <thead>
@@ -110,7 +112,7 @@
             <tr class="{% cycle 'row1' 'row2' %}">
                 {% for field in form.visible_fields %}
                     <td>
-{#                        Include the hidden fields in the form#}
+                        {#                        Include the hidden fields in the form#}
                         {% if forloop.first %}
                             {% for hidden in form.hidden_fields %}
                                 {{ hidden }}
@@ -125,11 +127,10 @@
     </table>
 
 </form>
-
-<h1>Aca debe estar el mensaje de error:
-    {{ mensaje }}
+<h1>Aca salen los errores</h1>
+    {{ error }}
     {{ form.error }}
-</h1>
+
 <button type="button" form="form_{{ form_id }}" class="btn btn-primary"
         onclick="guardarformulario('form_{{ form_id }}', '{{ url_guardar }}')"> Guardar
 </button>

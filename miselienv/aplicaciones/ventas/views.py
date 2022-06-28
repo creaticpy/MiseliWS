@@ -99,11 +99,25 @@ class FacturasView(LoginRequiredMixin, ListView):
         template_name = 'facturas_crearmod.html'
         facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, fk_name='factura',
                                                   fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                          'desc_larga',), extra=3, absolute_max=1500)
+                                                          'desc_larga',), max_num=8, absolute_max=1500)
         data = {}
         ctx  = {}
-        formcab = FacturasForm()
-        formdet = facturadetformset()
+
+        if request.method == 'GET':
+            formcab = FacturasForm()
+            formdet = facturadetformset()
+            ctx = {
+                'form': formcab,
+                'formset': formdet,
+                'uuid': uuid.uuid4(),
+                'form_uuid': uuid.uuid4(),
+                'section_uuid': uuid.uuid4(),
+                'nav_uuid': uuid.uuid4(),
+                'url_guardar': 'ventas/agregar_facturas',
+                # 'url_guardar': 'ventas/guardar_facturas',
+
+            }
+            return render(request, template_name, ctx)
 
         if request.method == 'POST':
             csrf = request.POST
@@ -111,53 +125,83 @@ class FacturasView(LoginRequiredMixin, ListView):
                 data = key
             data = json.loads(data)
             formcab = FacturasForm(data=data)
-            # print(formcab, "----------------------------------------> esto es formcab")
+
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
                 formdet = facturadetformset(data=data, instance=formcab)
-                print(formdet, "fooooooooooooooooooooooooooooormdet")
                 if formdet.is_valid():
                     formcab.save()
                     formdet.save()
                 else:
                     print(formdet.non_form_errors())
                     print("NO ES VALIDO---------------------------------------")
+                    return render(request, template_name, {'error': 'Error en el formulario'})
 
             else:
                 print("FORMULARIO INVALIDO")
-                ctx['mensaje'] = 'No se que mensaje poner'
-                # return JsonResponse(ctx)
+                return render(request, template_name, {'error': 'Error en el formulario'})
 
-        ctx = {
-            'form': formcab,
-            'formset': formdet,
-            'uuid': uuid.uuid4(),
-            'form_uuid': uuid.uuid4(),
-            'section_uuid': uuid.uuid4(),
-            'nav_uuid': uuid.uuid4(),
-            'url_guardar': 'ventas/agregar_facturas',
-            # 'url_guardar': 'ventas/guardar_facturas',
+    def modificar(request):
+        template_name = 'facturas_crearmod.html'
+        facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura',
+                                                  fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
+                                                          'desc_larga',), extra=0)
+        ctx = {}
+        formcab = FacturasForm()
+        formdet = facturadetformset()
 
-        }
+        if request.method == 'GET':
+            parametros = request.GET
+            objeto = FacturasModel.objects.get(pk=parametros['pk'])
+            if objeto is not None:
+                formcab = FacturasForm(instance=objeto)
 
+                print(formcab.__dict__, "esto es el get de formcab")
+                formdet = facturadetformset(instance=objeto)
+
+                ctx = {
+                    'form': formcab,
+                    'formset': formdet,
+                    'uuid': uuid.uuid4(),
+                    'form_uuid': uuid.uuid4(),
+                    'section_uuid': uuid.uuid4(),
+                    'nav_uuid': uuid.uuid4(),
+                    'url_guardar': 'ventas/modificar_facturas',
+                    # 'url_guardar': 'ventas/guardar_facturas',
+                }
+                return render(request, template_name, ctx)
+
+        elif request.method == 'POST':
+            facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura', extra=0)
+            params = request.POST
+
+            #objeto = FacturasModel.objects.get(pk=params['pk']).first()  # ---------------------------->>>>> ESTO NO FUNCIONA, CUAL ES LA ALTERNATIVA
+
+            if 1 == 1:  # aca deberia ir objeto
+            # if objeto is not None: # aca deberia ir objeto
+                formcab = FacturasForm()
+                #formcab = FacturasForm(instance=objeto)
+                csrf = request.POST
+                for key, value in csrf.items():  # esto solo me funciona asi, no se porque, esta relacionado al axios creo.
+                    data = key
+                data = json.loads(data)
+
+                formcab = FacturasForm(request.POST)
+                formdet = facturadetformset(request.POST, instance=formcab)
+
+                if formcab.is_valid() and formdet.is_valid():
+                    formcab = formcab.save()
+                    formdet.instance = formcab
+                    formdet.save()
+                else:
+                    print(formdet.non_form_errors(), "non_form_errors")
+                    print(formdet.errors, "erros")
+                    print("Detalle invalido!!!!.................---------------------------------------")
+
+            else:
+                print("Cabecera invalida....................")
+                return render(request, template_name, ctx)
         return render(request, template_name, ctx)
-
-
-    # def agregar(request):
-    #     template_name = 'facturas_crearmod.html'
-    #     reverse = " url 'core:index'"
-    #     # https://github.com/rayed/django-crud-parent-child/blob/master/apps/books_pc_formset2/templates/books_pc_formset2/book_form.html
-    #     data = {
-    #         'form': FacturasForm,
-    #         'uuid': uuid.uuid4(),
-    #         'form_uuid': uuid.uuid4(),
-    #         'section_uuid': uuid.uuid4(),
-    #         'nav_uuid': uuid.uuid4(),
-    #         'url_guardar': 'ventas/guardar_facturas',
-    #         'reverse': reverse,
-    #     }
-    #
-    #     return render(request, template_name, data)
 
     def guardar(request):
         template_name = 'facturas_crearmod.html'
@@ -181,52 +225,6 @@ class FacturasView(LoginRequiredMixin, ListView):
 
         return render(request, template_name, data)
 
-    # def nuevo_modificar(request):
-    #     template_name = 'facturas_crearmod.html'
-    #     reverse = " url 'core:index'"
-    #
-    #     params = request.GET
-    #
-    #     fact = FacturasModel()
-    #     adsf = FacturasModel()
-    #     print(adsf._meta.__class__)
-    #
-    #     for x in adsf._meta.__dict__:
-    #         print(x)
-    #         print(x)
-    #     # for x in adsf._meta.local_fields:
-    #     #     aaaa.append(x.name)
-    #     #     print(x.name)
-    #     #     print(x)
-    #
-    #
-    #
-    #
-    #     # print(list(adsf.__dict__.keys()), "esto es dict keys()")
-    #     # print(list(adsf.__dict__), "esto es dict")
-    #     if params['pk'] != 'false':
-    #
-    #         fact = FacturasModel.objects.get(pk=params['pk'])
-    #
-    #
-    #     context = {
-    #         'datos': fact,
-    #         'uuid': uuid.uuid4(),
-    #         'form_uuid': uuid.uuid4(),
-    #         'section_uuid': uuid.uuid4(),
-    #         'nav_uuid': uuid.uuid4(),
-    #         'reverse': reverse,
-    #     }
-    #
-    #     return render(request, template_name, context)
-
-    def modificar(request):
-        context = {
-            "cols": "cols",
-            "plantilla": "loader.render_to_string(template_name)",
-        }
-        return JsonResponse(context)
-
     def borrar(request):
         context = {
             "cols": "cols",
@@ -242,79 +240,3 @@ class FacturasView(LoginRequiredMixin, ListView):
 
 
 
-
-
-
-
-
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  # def agregar(request):
-  #       template_name = 'facturas_crearmod.html'
-  #       facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, fk_name='factura',
-  #                                             fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario'), extra=3)
-  #       data = {}
-  #       ctx  = {}
-  #       formcab = FacturasForm(data=data or None)
-  #       formdet = facturadetformset(data=data or None)
-  #       # formdet = facturadetformset(data=data or None, instance=FacturasModel())
-  #
-  #       if request.method == 'POST':
-  #           csrf = request.POST
-  #           for key, value in csrf.items():
-  #               data = key
-  #           data = json.loads(data)
-  #           formcab = FacturasForm(data=data or None)
-  #           formdet = facturadetformset(data=data or None)
-  #           for a in data:
-  #               print(a, "que es esto:-++++++++++++++++++++++++++++++++++++++++++")
-  #
-  #           if formcab.is_valid() and formdet.is_valid():
-  #               print("is valid formdet???????????????????????????????????????????????????????????????")
-  #               factura = formcab.save()
-  #               formdet.save()
-  #
-  #
-  #           else:
-  #               print("no es valid")
-  #               ctx['mensaje'] = 'No se que mensaje poner'
-  #               # return JsonResponse(ctx)
-  #
-  #       ctx = {
-  #           'form': formcab,
-  #           'formset': formdet,
-  #           'uuid': uuid.uuid4(),
-  #           'form_uuid': uuid.uuid4(),
-  #           'section_uuid': uuid.uuid4(),
-  #           'nav_uuid': uuid.uuid4(),
-  #           'url_guardar': 'ventas/agregar_facturas',
-  #           # 'url_guardar': 'ventas/guardar_facturas',
-  #
-  #       }
-  #
-  #       return render(request, template_name, ctx)
-  #
-  #
-  #   # def agregar(request):
-  #   #     template_name = 'facturas_crearmod.html'
-  #   #     reverse = " url 'core:index'"
-  #   #     # https://github.com/rayed/django-crud-parent-child/blob/master/apps/books_pc_formset2/templates/books_pc_formset2/book_form.html
-  #   #     data = {
-  #   #         'form': FacturasForm,
-  #   #         'uuid': uuid.uuid4(),
-  #   #         'form_uuid': uuid.uuid4(),
-  #   #         'section_uuid': uuid.uuid4(),
-  #   #         'nav_uuid': uuid.uuid4(),
-  #   #         'url_guardar': 'ventas/guardar_facturas',
-  #   #         'reverse': reverse,
-  #   #     }
-  #   #
-  #   #     return render(request, template_name, data)

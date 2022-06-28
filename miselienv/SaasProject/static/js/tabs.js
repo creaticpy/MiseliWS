@@ -2,7 +2,7 @@ const div = document.getElementById('detalle-tabs')
 const link_tabs = document.getElementById("linktabs")
 const contenedor_ul = document.getElementById("idul")
 
-// no se porque pero en crear el listener correctamente tenemos que invertir el orden de los parametros(Event, "menu")
+// no sé por qué, pero al crear el listener correctamente tenemos que invertir el orden de los parametros(Event, "menu")
 link_tabs.addEventListener('click', crear_tab.bind(Event, "menu")) // esto es para el menu
 contenedor_ul.addEventListener('click', seleccionar_tab.bind(Event))
 

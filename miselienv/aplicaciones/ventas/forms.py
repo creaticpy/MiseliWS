@@ -28,8 +28,8 @@ class RemisionesForm(forms.ModelForm):
 
 
 class FacturasForm(forms.ModelForm):
-    error_css_class = 'error'
-    required_css_class = 'required'
+    # error_css_class = 'error'
+    # required_css_class = 'required'
 
     tip_documento = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(desc_corta="FV"), initial="FV",
                                            label="Tip Doc")
@@ -50,11 +50,9 @@ class FacturasForm(forms.ModelForm):
 
     def clean_conf_cuotas(self):
         conf_cuotas = self.cleaned_data.get("conf_cuotas")
-        print("entro pio por aquiiiiiiii - uqe onda????", conf_cuotas, "------", self.cleaned_data.get("contado_credito"))
 
         if self.cleaned_data.get("contado_credito") == 'CRED' and not conf_cuotas:
             raise forms.ValidationError("Debe seleccionar la cantidad de cuotas")
-            print("entro pio por aquiiiiiiii???")
 
         return conf_cuotas
 
