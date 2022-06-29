@@ -99,7 +99,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         template_name = 'facturas_crearmod.html'
         facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, fk_name='factura',
                                                   fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                          'desc_larga',), max_num=8, absolute_max=1500)
+                                                          'desc_larga',), max_num=15, absolute_max=1500)
         data = {}
         ctx  = {}
 
@@ -120,15 +120,11 @@ class FacturasView(LoginRequiredMixin, ListView):
             return render(request, template_name, ctx)
 
         if request.method == 'POST':
-            csrf = request.POST
-            for key, value in csrf.items():
-                data = key
-            data = json.loads(data)
-            formcab = FacturasForm(data=data)
+            formcab = FacturasForm(request.POST)
 
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
-                formdet = facturadetformset(data=data, instance=formcab)
+                formdet = facturadetformset(request.POST, instance=formcab)
                 if formdet.is_valid():
                     formcab.save()
                     formdet.save()
@@ -139,13 +135,13 @@ class FacturasView(LoginRequiredMixin, ListView):
 
             else:
                 print("FORMULARIO INVALIDO")
-                return render(request, template_name, {'error': 'Error en el formulario'})
+            return render(request, template_name, {'error': 'Error en el formulario'})
 
-    def modificar(request):
+    def modificar(request):  # update method
         template_name = 'facturas_crearmod.html'
         facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura',
                                                   fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                          'desc_larga',), extra=0)
+                                                          'desc_larga',), extra=15, max_num=15)
         ctx = {}
         formcab = FacturasForm()
         formdet = facturadetformset()
@@ -155,8 +151,6 @@ class FacturasView(LoginRequiredMixin, ListView):
             objeto = FacturasModel.objects.get(pk=parametros['pk'])
             if objeto is not None:
                 formcab = FacturasForm(instance=objeto)
-
-                print(formcab.__dict__, "esto es el get de formcab")
                 formdet = facturadetformset(instance=objeto)
 
                 ctx = {
@@ -172,58 +166,26 @@ class FacturasView(LoginRequiredMixin, ListView):
                 return render(request, template_name, ctx)
 
         elif request.method == 'POST':
-            facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura', extra=0)
-            params = request.POST
+            facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura', fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15, max_num=15)
 
-            #objeto = FacturasModel.objects.get(pk=params['pk']).first()  # ---------------------------->>>>> ESTO NO FUNCIONA, CUAL ES LA ALTERNATIVA
+            # forms.py linea 33, revisar con Anthony, no es la manera de hacerlo.
+            # facturas_crearmod.html linea 12, no debe ser la manera de hacerlo.....
+            obj = FacturasModel.objects.get(pk=request.POST['id'])
+            formcab = FacturasForm(request.POST, instance=obj)
 
-            if 1 == 1:  # aca deberia ir objeto
-            # if objeto is not None: # aca deberia ir objeto
-                formcab = FacturasForm()
-                #formcab = FacturasForm(instance=objeto)
-                csrf = request.POST
-                for key, value in csrf.items():  # esto solo me funciona asi, no se porque, esta relacionado al axios creo.
-                    data = key
-                data = json.loads(data)
-
-                formcab = FacturasForm(request.POST)
+            if formcab.is_valid():
+                formcab = formcab.save(commit=False)
                 formdet = facturadetformset(request.POST, instance=formcab)
-
-                if formcab.is_valid() and formdet.is_valid():
-                    formcab = formcab.save()
-                    formdet.instance = formcab
+                if formdet.is_valid():
+                    formcab.save()
                     formdet.save()
                 else:
-                    print(formdet.non_form_errors(), "non_form_errors")
-                    print(formdet.errors, "erros")
-                    print("Detalle invalido!!!!.................---------------------------------------")
+                    print("Error en el detalle!!!!!", formdet.errors)
 
             else:
-                print("Cabecera invalida....................")
-                return render(request, template_name, ctx)
+                print("Error en la cabecera")
+
         return render(request, template_name, ctx)
-
-    def guardar(request):
-        template_name = 'facturas_crearmod.html'
-        data = {}
-
-        if request.method == 'POST':
-            try:
-                csrf = request.POST
-                for key, value in csrf.items():
-                    data = key
-                data = json.loads(data)
-
-                form = FacturasForm(data=data)
-                if form.is_valid():
-                    form.save()
-                    data['mensaje'] = "Guardado Correctamente"
-                else:
-                    data['mensaje'] = 'No se que mensaje poner'
-            except Exception as e:
-                print(e)
-
-        return render(request, template_name, data)
 
     def borrar(request):
         context = {

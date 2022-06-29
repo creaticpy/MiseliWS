@@ -30,13 +30,13 @@ class RemisionesForm(forms.ModelForm):
 class FacturasForm(forms.ModelForm):
     # error_css_class = 'error'
     # required_css_class = 'required'
-
+    id = forms.IntegerField()
     tip_documento = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(desc_corta="FV"), initial="FV",
                                            label="Tip Doc")
     nro_documento = forms.CharField(label='Nro Documento', required=True, help_text="Formato: 0010020000123")
 
-    fecha_documento = forms.DateField(initial=now(), widget=forms.DateInput(attrs={'type': 'date'}))
-    fecha_transaccion = forms.DateField(initial=now(), widget=forms.DateInput(attrs={'type': 'date'}))
+    fecha_documento = forms.DateField(initial=now(), widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    fecha_transaccion = forms.DateField(initial=now(), widget=forms.DateInput(format='%Y-%m-%d',attrs={'type': 'date'}))
     dep_origen = forms.ModelChoiceField(required=True, label="Deposito", queryset=SubDepositoModel.objects.all(),
                                         initial="1")
     cliente = forms.ModelChoiceField(required=True, label="Cliente", queryset=ClientesModel.objects.all(), initial="1")

@@ -15,12 +15,7 @@ function replacer(key, value) {
 function serialize(form_id) {
     let obj = {};
     let formData = new FormData(document.getElementById(form_id));
-    for (let key of formData.keys()) {
-        obj[key] = formData.get(key);
-    }
-
-    return JSON.stringify(obj)
-    // return obj
+    return formData
 }
 
 function guardarformulario(form_id, url) {
@@ -29,37 +24,15 @@ function guardarformulario(form_id, url) {
 
     if (document.getElementById(form_id).checkValidity()) {
         let datos = serialize(form_id)
-        // let csrf = JSON.parse(datos)
-        // csrf = csrf["csrfmiddlewaretoken"]
 
         console.log(typeof (datos), datos, "esto es typeof")
-        //
-        //     axios.post(url, datos)
-        //         .then(function (respuesta) {
-        //             console.log(respuesta, "esta es la respuesta por medio de axios")
-        //         }).catch(function (err) {
-        //         console.log(err)
-        //     })
-        // } else {
-        //     console.log("el formulario no es valido")
-        // }
-
 
         axios({
             method: 'post',
             url: url,
             data: datos,
             headers: {
-                //     // "X-CSRFToken": datos,
-                //     Accept: "application/json",
-                //     "Content-Type": "application/json;charset=UTF-8",
-                //      "Content-Type": "multipart/form-data",
-                //       "Content-Type": "text/plain",
-                // "Content-Type": "text/html",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                //     // "content-type": "application/x-www-form-urlencoded",
-                //     // "content-type": "application/json",
-                //
+                "Content-Type": "multipart/form-data",
             }
         })
             .then(function (respuesta) {
