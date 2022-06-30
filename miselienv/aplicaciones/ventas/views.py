@@ -179,13 +179,14 @@ class FacturasView(LoginRequiredMixin, ListView):
                 if formdet.is_valid():
                     formcab.save()
                     formdet.save()
+                    return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    print("Error en el detalle!!!!!", formdet.errors)
+                    return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
 
             else:
-                print("Error en la cabecera")
+                return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
 
-        return render(request, template_name, ctx)
+        # return render(request, template_name, ctx)
 
     def borrar(request):
         context = {

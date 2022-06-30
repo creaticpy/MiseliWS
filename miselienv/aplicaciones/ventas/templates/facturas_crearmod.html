@@ -9,10 +9,10 @@
             <div class="col-9 d-grid gap-2" style="min-width: 310px">
                 <div class="row g-1 align-items-center ">
                     <div hidden>
-                       {{  form.id }}
+                        {{ form.id }}
                     </div>
                     <div class="row" style="width: 13%; min-width: 110px;">
-{#                        {{ form.contado_credito.label }}#}
+                        {#                        {{ form.contado_credito.label }}#}
                         Cont/Cred
                         {{ form.contado_credito }}
                     </div>
@@ -97,42 +97,35 @@
         </div>
     </div>
 
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="detallestock" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Detalle Stock
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="detalleservicios" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Detalle Servicios
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="detallestock" tabindex="0">
 
-    <h3><strong>Detalle</strong></h3>
-    {{ formset.non_form_errors.as_ul }}
-    <table id="formset" class="form">
-        {{ formset.management_form }} {# Nooooooooooo olvidar esta linea #}
-        {% for form in formset.forms %}
-            {% if forloop.first %}
-                <thead>
-                <tr>
-                    {% for field in form.visible_fields %}
-                        <th>{{ field.label|capfirst }}</th>
-                    {% endfor %}
-                </tr>
-                </thead>
-            {% endif %}
-            <tr class="{% cycle 'row1' 'row2' %}">
-                {% for field in form.visible_fields %}
-                    <td>
-                        {#                        Include the hidden fields in the form#}
-                        {% if forloop.first %}
-                            {% for hidden in form.hidden_fields %}
-                                {{ hidden }}
-                            {% endfor %}
-                        {% endif %}
-                        {{ field.errors.as_ul }}
-                        {{ field }}
-                    </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+            {% include 'facturas_crearmod_detstock.html' %}
+
+        </div>
+        <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="detalleservicios" tabindex="0">
+            aca tengo que incluir las facturaciones por servicios
+
+        </div>
+    </div>
+
 
 </form>
 <h1>Aca salen los errores</h1>
-    {{ error }}
-    {{ form.error }}
+{{ error }}
+{{ form.error }}
 
 <button type="button" form="form_{{ form_id }}" class="btn btn-primary"
         onclick="guardarformulario('form_{{ form_id }}', '{{ url_guardar }}')"> Guardar

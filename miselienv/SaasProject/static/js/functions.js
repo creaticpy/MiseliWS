@@ -25,8 +25,6 @@ function guardarformulario(form_id, url) {
     if (document.getElementById(form_id).checkValidity()) {
         let datos = serialize(form_id)
 
-        console.log(typeof (datos), datos, "esto es typeof")
-
         axios({
             method: 'post',
             url: url,
@@ -35,9 +33,9 @@ function guardarformulario(form_id, url) {
                 "Content-Type": "multipart/form-data",
             }
         })
-            .then(function (respuesta) {
+            .then(function (res) {
 
-                console.log(respuesta, "esta es la respuesta por medio de axios")
+                alert_message(text = res.data['text'], type = res.data['type'], timelapse = res.data['timelapse'])
 
             }).catch(function (err) {
             console.log(err)
@@ -45,8 +43,6 @@ function guardarformulario(form_id, url) {
     } else {
         console.log("el formulario no es valido")
     }
-
-
 }
 
 function submitForm(form_id) {
@@ -54,4 +50,22 @@ function submitForm(form_id) {
     let form = document.getElementById(form_id)
     console.log(form.checkValidity())
 
+}
+
+function alert_message(text, type, timelapse) {
+
+    let alert_box = document.getElementById('alert-box')
+    alert_box.innerHTML += `<div class="alert alert-${type}" data-bs-dismiss="alert" role="alert">${text}</div>`
+
+
+    setTimeout(BorrarAlerta, timelapse)
+
+    function BorrarAlerta() {
+        let hijos = alert_box.querySelectorAll('div')
+        hijos.forEach((cada, i) => {
+            alert_box.removeChild(hijos.item(i))
+        })
+
+
+    }
 }

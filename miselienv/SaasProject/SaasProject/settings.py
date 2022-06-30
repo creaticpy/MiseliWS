@@ -130,7 +130,7 @@ PUBLIC_SCHEMA_URLCONF = 'SaasProject.urls_public'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['../templates', './core/templates', '/aplicaciones/ventas/templates'],
+        'DIRS': ['../templates', './core/templates', '/aplicaciones/ventas/templates', '/aplicaciones/rrhh/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
