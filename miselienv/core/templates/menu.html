@@ -15,10 +15,10 @@
         {% for x in menu %}
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#{{ x.desc_larga }}" aria-expanded="false">
+                        data-bs-target="#{{ x.desc_larga|cut:" " }}" aria-expanded="false">
                     {{ x.desc_larga }}
                 </button>
-                <div class="collapse" id="{{ x.desc_larga }}" style="">
+                <div class="collapse" id="{{ x.desc_larga|cut:" " }}" style="">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         {% for y in sub_menu %}
                             {% if x.id == y.menu.id %}

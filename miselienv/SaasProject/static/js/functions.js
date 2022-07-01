@@ -21,6 +21,7 @@ function serialize(form_id) {
 function guardarformulario(form_id, url) {
     console.log(form_id, "esto es form_id")
     console.log(url, "esto es url")
+    console.log(document.getElementById(form_id), "document.getElementById(form_id).........")
 
     if (document.getElementById(form_id).checkValidity()) {
         let datos = serialize(form_id)

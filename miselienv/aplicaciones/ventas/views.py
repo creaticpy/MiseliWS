@@ -33,6 +33,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         template_name = 'facturas_ld.html'
         tabla_creada = ""
         url_agregar_registro = "ventas/agregar_facturas"
+        tab_texto = "Cargar Factura"
 
         def get_queryset(filtro, order_by):
             qs = FacturasModel.objects.all()
@@ -73,6 +74,7 @@ class FacturasView(LoginRequiredMixin, ListView):
                 "cols": cols,
                 "plantilla": loader.render_to_string(template_name),
                 "url_agregar_registro": url_agregar_registro,
+                "tab_texto": tab_texto,
             }
 
             return JsonResponse(context)
@@ -98,10 +100,9 @@ class FacturasView(LoginRequiredMixin, ListView):
     def agregar(request):
         template_name = 'facturas_crearmod.html'
         facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, fk_name='factura',
-                                                  fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                          'desc_larga',), max_num=15, absolute_max=1500)
-        data = {}
-        ctx  = {}
+                                                  fields=(
+                                                      'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
+                                                      'desc_larga',), max_num=15, absolute_max=1500)
 
         if request.method == 'GET':
             formcab = FacturasForm()
@@ -114,14 +115,11 @@ class FacturasView(LoginRequiredMixin, ListView):
                 'section_uuid': uuid.uuid4(),
                 'nav_uuid': uuid.uuid4(),
                 'url_guardar': 'ventas/agregar_facturas',
-                # 'url_guardar': 'ventas/guardar_facturas',
-
             }
             return render(request, template_name, ctx)
 
         if request.method == 'POST':
             formcab = FacturasForm(request.POST)
-
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
                 formdet = facturadetformset(request.POST, instance=formcab)
@@ -131,17 +129,21 @@ class FacturasView(LoginRequiredMixin, ListView):
                 else:
                     print(formdet.non_form_errors())
                     print("NO ES VALIDO---------------------------------------")
-                    return render(request, template_name, {'error': 'Error en el formulario'})
+                    return JsonResponse({'text': 'El documento no se ha guardado', 'type': 'primary', 'timelapse': '3000'})
 
             else:
-                print("FORMULARIO INVALIDO")
-            return render(request, template_name, {'error': 'Error en el formulario'})
+                print("FORMULARIO INVALIDO", formcab.errors)
+
+                return JsonResponse({'text': 'El documento no se ha guardado', 'type': 'primary', 'timelapse': '3000'})
+            return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
 
     def modificar(request):  # update method
         template_name = 'facturas_crearmod.html'
-        facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura',
-                                                  fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                          'desc_larga',), extra=15, max_num=15)
+        facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm,
+                                                  fk_name='factura',
+                                                  fields=(
+                                                      'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
+                                                      'desc_larga',), extra=15, max_num=15)
         ctx = {}
         formcab = FacturasForm()
         formdet = facturadetformset()
@@ -166,7 +168,10 @@ class FacturasView(LoginRequiredMixin, ListView):
                 return render(request, template_name, ctx)
 
         elif request.method == 'POST':
-            facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm, fk_name='factura', fields=('articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15, max_num=15)
+            facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm,
+                                                      fk_name='factura', fields=(
+                    'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
+                                                      max_num=15)
 
             # forms.py linea 33, revisar con Anthony, no es la manera de hacerlo.
             # facturas_crearmod.html linea 12, no debe ser la manera de hacerlo.....
@@ -194,12 +199,3 @@ class FacturasView(LoginRequiredMixin, ListView):
             "plantilla": "loader.render_to_string(template_name)",
         }
         return JsonResponse(context)
-
-
-
-
-
-
-
-
-

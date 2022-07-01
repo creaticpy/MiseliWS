@@ -83,7 +83,7 @@ class DocumentosModel(PeriodosModel):
     nro_documento       = models.CharField(max_length=100, null=False, blank=False, default="Cargar Nro Documento",
                                            help_text="Los Nros de documentos legales deben tener el siguiente formato: 0010010000001")  # Ej: para contratos CTS200/4 o facturas: 001-001-2020211
     fecha_transaccion   = models.DateField(default=now, null=False, blank=False)  # Fecha creacion_registro
-    observaciones       = models.CharField(max_length=1000, null=False, blank=False)
+    observaciones       = models.CharField(max_length=1000, null=True, blank=True)
 
     object_by_sucursal  = DocumentosManager()
 

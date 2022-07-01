@@ -80,7 +80,7 @@ class EmpleadosModel(BaseModel):
     fecha_egreso        = models.DateField(blank=True, null=True)
     email               = models.EmailField(blank=True, null=True)
     contacto_emergencia = models.ForeignKey(PersonasModel, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, verbose_name='Contacto de Emergencia', related_name='contactoemergencia')
-    empleado_sucursal   = models.ManyToManyField(SucursalesModel, through=EmpleadosSucursalesModel)
+    empleado_sucursal   = models.ManyToManyField(SucursalesModel, through=EmpleadosSucursalesModel, blank=True, null=True)
 
     def __str__(self):
         return '{nombre} {apellido}'.format(nombre=self.id.nombre, apellido=self.id.apellido)

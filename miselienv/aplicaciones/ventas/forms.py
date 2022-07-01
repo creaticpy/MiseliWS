@@ -1,7 +1,7 @@
 from aplicaciones.shared_apps.models import TipDocumentoDetModel
 from aplicaciones.stock.models import SubDepositoModel
 from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel, FacturasDetModel
-from base.choices import estado
+
 
 from django import forms
 from django.utils.timezone import now
@@ -30,7 +30,7 @@ class RemisionesForm(forms.ModelForm):
 class FacturasForm(forms.ModelForm):
     # error_css_class = 'error'
     # required_css_class = 'required'
-    id = forms.IntegerField()
+    id = forms.IntegerField(required=False)
     tip_documento = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(desc_corta="FV"), initial="FV",
                                            label="Tip Doc")
     nro_documento = forms.CharField(label='Nro Documento', required=True, help_text="Formato: 0010020000123")

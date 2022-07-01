@@ -5,7 +5,7 @@ import uuid
 from django.conf.locale.en import formats as en_formats
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelform_factory
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
@@ -17,7 +17,11 @@ from .models import EmpleadosModel, PersonasModel
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
 from django.shortcuts import render
 
+
 # Create your views here.
+def myconverter(o):
+    if isinstance(o, datetime.datetime):
+        return o.strftime("%m/%d/%Y")
 
 
 class EmpleadosView(LoginRequiredMixin, ListView):
@@ -26,22 +30,19 @@ class EmpleadosView(LoginRequiredMixin, ListView):
     def consultas(request):
         template_name = 'empleados_ld.html'
         tabla_creada = ""
-        url_agregar_registro = "ventas/agregar_facturas"
+        url_agregar_registro = "rrhh/agregar_empleados"
+        tab_texto = "Cargar Empleado"
 
         def get_queryset(filtro, order_by):
-            qs = PersonasModel.objects.all()
+            qs = EmpleadosModel.objects.all()
             # qs = FacturasModel.objects.extra(select={"fecha_documento": "DATE_FORMAT(fecha_documento, '%%Y-%%m-%%d')"})
             qs = qs.filter(Q(estado=True),
-                           Q(cliente__id__nombre__icontains=filtro) |
-                           Q(cliente__id__apellido__icontains=filtro) |
-                           Q(cliente__id__ruc__icontains=filtro) |
-                           Q(cliente__id__nro_documento__icontains=filtro) |
-                           Q(fecha_documento__icontains=filtro) |
-                           Q(periodo__icontains=filtro) |
-                           Q(cotizacion__icontains=filtro) |
-                           Q(nro_documento__icontains=filtro)
-                           ).values("id", "cliente__id__nombre", "tip_documento__desc_corta", "fecha_documento",
-                                    "nro_documento", "cotizacion"
+                           Q(id__nombre__icontains=filtro) |
+                           Q(id__apellido__icontains=filtro) |
+                           Q(id__nro_documento__icontains=filtro) |
+                           Q(id__razon_social__icontains=filtro)
+                           ).values("id", "id__nombre", "id__apellido", "fecha_ingreso",
+                                    "fecha_egreso", "id__nro_documento", "id__nro_celular",
                                     ).order_by("{order_by}".format(order_by=order_by))
             return qs
 
@@ -53,20 +54,21 @@ class EmpleadosView(LoginRequiredMixin, ListView):
         if tabla_creada == "yes":
             cols = [
                 {"data": "id"},
-                {"data": "cliente__id__nombre"},
-                {"data": "tip_documento__desc_corta"},
-                {"data": "fecha_documento"},
+                {"data": "id__nombre"},
+                {"data": "id__apellido"},
+                {"data": "id__fecha_ingreso"},
+                {"data": "id__fecha_egreso"},
                 {"data": "nro_documento"},
-                {"data": "cotizacion"},
                 {
-                    "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='ventas/modificar_facturas' tab_text='Mod Facturas'><i class='fa bi-pencil-square'></i></button>"},
+                    "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='rrhh/modificar_empleados' tab_text='Mod Facturas'><i class='fa bi-pencil-square'></i></button>"},
                 {
-                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='ventas/borrar_facturas' tab_text='Elim Facturas' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
+                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Facturas' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
             ]
             context = {
                 "cols": cols,
                 "plantilla": loader.render_to_string(template_name),
                 "url_agregar_registro": url_agregar_registro,
+                "tab_texto": tab_texto,
             }
 
             return JsonResponse(context)
@@ -79,7 +81,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
         list_data = []
 
         for indice, valor in enumerate(data[inicio:inicio + fin], inicio):
-            valor["fecha_documento"] = valor["fecha_documento"].strftime("%d/%m/%Y")
+            valor["fecha_ingreso"] = valor["fecha_ingreso"].strftime("%d/%m/%Y")
             list_data.append(valor)
 
         context = {
@@ -87,20 +89,17 @@ class EmpleadosView(LoginRequiredMixin, ListView):
             'objects': list_data
         }
         # todo default es llamado cuando un parametro no es convertido a json entonces se lo convierte a str y luego se reprocesa
-        return HttpResponse(json.dumps(context, default="myconverter"), 'application/json')
+        return HttpResponse(json.dumps(context, default=myconverter), 'application/json')
 
     def agregar(request):
-        template_name = 'facturas_crearmod.html'
-        facturadetformset = inlineformset_factory(EmpleadosModel, PersonasModel, fk_name='factura',
-                                                  fields=(
-                                                  'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                  'desc_larga',), max_num=15, absolute_max=1500)
-        data = {}
-        ctx = {}
+        template_name = 'empleados_crearmod.html'
+        empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
+                                                 fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                         'contacto_emergencia',), extra=1, max_num=1)
 
         if request.method == 'GET':
-            formcab = EmpleadosForm()
-            formdet = facturadetformset()
+            formcab = PersonasForm()
+            formdet = empleadosformset()
             ctx = {
                 'form': formcab,
                 'formset': formdet,
@@ -108,46 +107,48 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                 'form_uuid': uuid.uuid4(),
                 'section_uuid': uuid.uuid4(),
                 'nav_uuid': uuid.uuid4(),
-                'url_guardar': 'ventas/agregar_facturas',
-                # 'url_guardar': 'ventas/guardar_facturas',
+                'url_guardar': 'rrhh/agregar_empleados',
 
             }
             return render(request, template_name, ctx)
 
         if request.method == 'POST':
-            formcab = EmpleadosForm(request.POST)
-
+            formcab = PersonasForm(request.POST)
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
-                formdet = facturadetformset(request.POST, instance=formcab)
+                formdet = empleadosformset(request.POST, instance=formcab)
                 if formdet.is_valid():
                     formcab.save()
                     formdet.save()
+                    return JsonResponse(
+                        {'text': 'Registro Guardado', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    print(formdet.non_form_errors())
-                    print("NO ES VALIDO---------------------------------------")
-                    return render(request, template_name, {'error': 'Error en el formulario'})
+                    print("FORMULARIO INVALIDO.....", formdet.errors)
+                    print("FORMULARIO INVALIDO.....", formdet.data)
+                    return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
 
             else:
-                print("FORMULARIO INVALIDO")
-            return render(request, template_name, {'error': 'Error en el formulario'})
+                print("FORMULARIO INVALIDO", formcab.errors)
+                return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
 
     def modificar(request):  # update method
         template_name = 'facturas_crearmod.html'
-        facturadetformset = inlineformset_factory(EmpleadosModel, PersonasModel, form=PersonasForm, fk_name='factura',
-                                                  fields=(
-                                                  'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto',
-                                                  'desc_larga',), extra=15, max_num=15)
+        personasformset = inlineformset_factory(PersonasModel, EmpleadosModel, form='EmpleadosForm', fk_name='id',
+                                                fields=(
+                                                    'nombre', 'apellido', 'razon_social', 'direccion', 'ruc',
+                                                    'dir_geo', 'sexo', 'fecha_nac_const', 'tipo_documento',
+                                                    'nro_documento', 'fec_venc_doc_iden', 'nro_celular', 'nro_whatsapp',
+                                                    'email',), extra=1, max_num=1)
         ctx = {}
         formcab = EmpleadosForm()
-        formdet = facturadetformset()
+        formdet = personasformset()
 
         if request.method == 'GET':
             parametros = request.GET
             objeto = EmpleadosModel.objects.get(pk=parametros['pk'])
             if objeto is not None:
                 formcab = EmpleadosForm(instance=objeto)
-                formdet = facturadetformset(instance=objeto)
+                formdet = personasformset(instance=objeto)
 
                 ctx = {
                     'form': formcab,
@@ -156,15 +157,15 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                     'form_uuid': uuid.uuid4(),
                     'section_uuid': uuid.uuid4(),
                     'nav_uuid': uuid.uuid4(),
-                    'url_guardar': 'ventas/modificar_facturas',
-                    # 'url_guardar': 'ventas/guardar_facturas',
+                    'url_guardar': 'rrhh/modificar_empleados',
                 }
                 return render(request, template_name, ctx)
 
         elif request.method == 'POST':
             facturadetformset = inlineformset_factory(EmpleadosModel, PersonasModel, form=PersonasForm,
                                                       fk_name='factura', fields=(
-                'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15, max_num=15)
+                    'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
+                                                      max_num=15)
 
             # forms.py linea 33, revisar con Anthony, no es la manera de hacerlo.
             # facturas_crearmod.html linea 12, no debe ser la manera de hacerlo.....
@@ -192,6 +193,3 @@ class EmpleadosView(LoginRequiredMixin, ListView):
             "plantilla": "loader.render_to_string(template_name)",
         }
         return JsonResponse(context)
-
-
-

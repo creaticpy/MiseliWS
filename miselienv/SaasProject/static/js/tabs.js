@@ -104,7 +104,7 @@ function crear_tab(origenes, evento) {
                     let cols = resp.data["cols"]
                     block.innerHTML = resp.data["plantilla"]
                     let tabla = block.getElementsByTagName("table")
-                    load_tables(dir_url, cols, tabla.item(0).id, resp.data['url_agregar_registro'], block)
+                    load_tables(dir_url, cols, tabla.item(0).id, resp.data['url_agregar_registro'], block, resp.data["tab_texto"])
 
 
                 }).catch(function (err) {
@@ -156,7 +156,7 @@ function cerrar_tab() {
     }
 }
 
-function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block) {
+function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_texto) {
 
     let datatable = $('#' + id_tabla).DataTable({
         "aoColumnDefs": [{"sClass": "dpass", "aTargets": [0]}],
@@ -187,7 +187,7 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block) {
         "buttons": [
             {
                 text: "Agregar",
-                attr: {href: '#', url: url_agregar_registro, tab_text: "Cargar Facturas"},
+                attr: {href: '#', url: url_agregar_registro, tab_text: tab_texto},
                 className: "agregar"
                 // action: function (e, dt, node, config) {
                 //     crear_tab("boton_agregar", id_tabla)
@@ -200,27 +200,6 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block) {
     let item = block.getElementsByClassName('dt-buttons').item(0).getElementsByClassName('agregar').item(0)
     item.addEventListener('click', crear_tab.bind(Event, 'datatables'))
 
-
-    //funciona correctamente, vamos a ver de usar otro metodo
-    // eventosbotones()
-    // function eventosbotones() {
-    //
-    //     datatable.on('click', 'button.editar', function () {
-    //         console.log(datatable.row($(this).parents("tr")).data(), "aca editamos")
-    //         console.log(this.attributes.url, "aca borramosc")
-    //         console.log(Event, "estoooooooooooooooooooooooo es evento")
-    //         console.log("", "estoooooooooooooooooooooooo es eventosssssssssss")
-    //     })
-    //
-    //     datatable.on('click', 'button.eliminar', function () {
-    //
-    //         console.log(datatable.row($(this).parents("tr")).data(), "aca borramos")
-    //         console.log(datatable.row($(this)), "aca borramosa")
-    //         console.log(this, "aca borramosb")
-    //         console.log(this.url, "aca borramosc")
-    //
-    //
-    //     })
 
 
 }
