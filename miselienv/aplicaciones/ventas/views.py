@@ -127,8 +127,6 @@ class FacturasView(LoginRequiredMixin, ListView):
                     formcab.save()
                     formdet.save()
                 else:
-                    print(formdet.non_form_errors())
-                    print("NO ES VALIDO---------------------------------------")
                     return JsonResponse({'text': 'El documento no se ha guardado', 'type': 'primary', 'timelapse': '3000'})
 
             else:

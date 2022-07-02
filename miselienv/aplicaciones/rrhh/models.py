@@ -1,6 +1,6 @@
 from aplicaciones.base.choices import sino, estado
 from django.db import models
-from aplicaciones.base.models import BaseModel, UserProfile, SucursalesModel
+from aplicaciones.base.models import BaseModel, UserProfile, SucursalesModel, Maestros
 from django.conf import settings
 from django.utils.timezone import now
 from aplicaciones.base import choices
@@ -74,13 +74,28 @@ class EmpleadosSucursalesModel(BaseModel):
         super().clean()
 
 
+class BeneficiosModel(Maestros):
+    verbose_name = 'Beneficio'
+    verbose_name_plural = 'Beneficios'
+
+
+class EmpleadosBeneficiosModel(BaseModel):
+    empleado = models.ForeignKey('EmpleadosModel', blank=False, null=False, on_delete=settings.DB_ON_DELETE_TRANS)
+    beneficio = models.ForeignKey(BeneficiosModel, blank=False, null=False, on_delete=settings.DB_ON_DELETE_TRANS)
+
+    class Meta:
+        verbose_name = 'Empleado Beneficio'
+        verbose_name_plural = 'Empleados Beneficios'
+
+
 class EmpleadosModel(BaseModel):
     id                  = models.OneToOneField(PersonasModel, on_delete=settings.DB_ON_DELETE_TRANS, primary_key=True, db_column='id', related_name='idpersona')
     fecha_ingreso       = models.DateField(default=now, blank=False, null=False, editable=True)
     fecha_egreso        = models.DateField(blank=True, null=True)
     email               = models.EmailField(blank=True, null=True)
     contacto_emergencia = models.ForeignKey(PersonasModel, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, verbose_name='Contacto de Emergencia', related_name='contactoemergencia')
-    empleado_sucursal   = models.ManyToManyField(SucursalesModel, through=EmpleadosSucursalesModel, blank=True, null=True)
+    empleado_sucursal   = models.ManyToManyField(SucursalesModel, through=EmpleadosSucursalesModel)
+    beneficios = models.ManyToManyField(BeneficiosModel, through="EmpleadosBeneficiosModel")
 
     def __str__(self):
         return '{nombre} {apellido}'.format(nombre=self.id.nombre, apellido=self.id.apellido)
@@ -90,9 +105,11 @@ class EmpleadosModel(BaseModel):
         verbose_name_plural = "Empleados"
 
     # pagohoraextra = models.BooleanField(default=False, blank=False, null=False)
-    # beneficios = models.ManyToManyField(Beneficios, through="EmpleadosBeneficios")
     # sucdeparsecc = models.ForeignKey(SucDeparSecc, on_delete=settings.DB_ON_DELETE_TRANS)
     # super(Entidad) validar, es para que despues recien cargue los atributos heredados
+
+
+
 
 
 # este proxim es usado unicamente para que cada empleado

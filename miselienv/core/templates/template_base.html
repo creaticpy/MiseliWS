@@ -24,6 +24,20 @@
         th.dpass, td.dpass {
             display: none;
         }
+
+        .row {
+            background-color: #e9ecef;
+        }
+
+        .row > div {
+            border: solid 2px black;
+        }
+
+        .row > .head {
+            border: solid 2px black;
+        }
+
+
     </style>
 
 </head>
@@ -31,32 +45,67 @@
 
 {% if request.user.is_authenticated %}
 
-    <section class="ccontenedorindex">
-        <div id="alert-box"></div>
+    {#    <section class="ccontenedorindex" style="background: #0dcaf0">#}
+    {#https://www.codeply.com/go/rgHEL6DW12/complex-grid-layout-bootstrap#}
+    <div class="container-fluid" style="height: 100vh">
+        <div class="row h-100">
+            <div class="row head" style="height: 80px">
+                <div class="col-lg-12">cabecera
+                </div>
+            </div>
+            <div class="row h-100" style="height: 380px">
+                <div class="col-lg-2 h-100">
+                    {% include 'menu.html' %}
+                </div>
+                <div class="col-lg-10">
+                    <div class="row h-100">
 
-        <section id="section_id" class="chead">
-            Esto es el nombre de la empresa: {% nombre_empresa %}
-            esto es head
-        </section>
-        <section class="cmenu toggle">
-            {% include 'menu.html' %}
-        </section>
-        <section class="ccontenido">
-            {% include 'tabs.html' %}
-        </section>
+                        <div class="col-lg-11">
+                            <div class="col-lg-10">
+                                {% include 'tabs.html' %}
 
-        <section class="cfooter">
+                            </div>
+                            <div class="col-lg-1">
+                                asd
+                            </div>
+                        </div>
+                        <div class="col-lg-1">
+                            <div id="alert-box"></div>
 
-{#            <a href="#miModala">Abrir Modal</a>#}
-{#            <div id="miModala" class="modala">#}
-{#                <div class="modala-contenido">#}
-{#                    <a href="#">X</a>#}
-{#                    <h2>Mi primer Modal</h2>#}
-{#                    <p>Este es mi primera ventana modal sin utilizar JavaScript.</p>#}
-{#                </div>#}
-{#            </div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        </section>
+
+
+
+
+    {#        <section id="section_id" class="chead">#}
+    {#            Esto es el nombre de la empresa: {% nombre_empresa %}#}
+    {#            esto es head#}
+    {#        </section>#}
+    {#        <section class="cmenu toggle">#}
+    {#            {% include 'menu.html' %}#}
+    {#        </section>#}
+    {#        <section class="ccontenido">#}
+    {#            {% include 'tabs.html' %}#}
+    {#        </section>#}
+    {##}
+    {#        <section class="cfooter">#}
+    {##}
+    {#            <a href="#miModala">Abrir Modal</a>#}
+    {#            <div id="miModala" class="modala">#}
+    {#                <div class="modala-contenido">#}
+    {#                    <a href="#">X</a>#}
+    {#                    <h2>Mi primer Modal</h2>#}
+    {#                    <p>Este es mi primera ventana modal sin utilizar JavaScript.</p>#}
+    {#                </div>#}
+    {#            </div>#}
+    {##}
+    {#        </section>#}
 
     </section>
 

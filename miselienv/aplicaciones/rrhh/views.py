@@ -11,8 +11,8 @@ from django.shortcuts import render
 from django.template import loader
 from django.views.generic import ListView
 
-from .forms import EmpleadosForm, PersonasForm
-from .models import EmpleadosModel, PersonasModel
+from .forms import EmpleadosForm, PersonasForm, EmpleadosBeneficiosForm
+from .models import EmpleadosModel, PersonasModel, EmpleadosBeneficiosModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
 from django.shortcuts import render
@@ -42,7 +42,8 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                            Q(id__nro_documento__icontains=filtro) |
                            Q(id__razon_social__icontains=filtro)
                            ).values("id", "id__nombre", "id__apellido", "fecha_ingreso",
-                                    "fecha_egreso", "id__nro_documento", "id__nro_celular",
+                                    "fecha_egreso", "id__nro_documento", "id__direccion", "id__email",
+                                    "id__nro_celular",
                                     ).order_by("{order_by}".format(order_by=order_by))
             return qs
 
@@ -56,13 +57,15 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                 {"data": "id"},
                 {"data": "id__nombre"},
                 {"data": "id__apellido"},
-                {"data": "id__fecha_ingreso"},
-                {"data": "id__fecha_egreso"},
-                {"data": "nro_documento"},
+                {"data": "fecha_ingreso"},
+                {"data": "fecha_egreso"},
+                {"data": "id__email"},
+                {"data": "id__direccion"},
+                {"data": "id__nro_documento"},
                 {
-                    "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='rrhh/modificar_empleados' tab_text='Mod Facturas'><i class='fa bi-pencil-square'></i></button>"},
+                    "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='rrhh/modificar_empleados' tab_text='Mod Empleado'><i class='fa bi-pencil-square'></i></button>"},
                 {
-                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Facturas' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
+                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
             ]
             context = {
                 "cols": cols,
@@ -96,13 +99,17 @@ class EmpleadosView(LoginRequiredMixin, ListView):
         empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
                                                  fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
                                                          'contacto_emergencia',), extra=1, max_num=1)
-
+        emplbeneficiosformset = inlineformset_factory(EmpleadosModel, EmpleadosBeneficiosModel, form=EmpleadosBeneficiosForm, fk_name='empleado',
+                                                 fields=('estado', 'beneficio',), extra=15, max_num=15)
         if request.method == 'GET':
             formcab = PersonasForm()
             formdet = empleadosformset()
+            formdetben = emplbeneficiosformset()
+
             ctx = {
                 'form': formcab,
                 'formset': formdet,
+                'formsetbeneficios': formdetben,
                 'uuid': uuid.uuid4(),
                 'form_uuid': uuid.uuid4(),
                 'section_uuid': uuid.uuid4(),
@@ -120,11 +127,12 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                 if formdet.is_valid():
                     formcab.save()
                     formdet.save()
-                    return JsonResponse(
-                        {'text': 'Registro Guardado', 'type': 'primary', 'timelapse': '3000'})
+                    print("FORMULARIO tiene error?.....!!!!", formdet.errors)
+                    print("FORMULARIO debe tener error.....!!!!", formdet.non_form_errors())
+                    print("FORMULARIO data.....!!!!", formdet.data)
+                    print("FORMULARIO asecas.....!!!!", formdet)
+                    return JsonResponse({'text': 'Registro Guardado...', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    print("FORMULARIO INVALIDO.....", formdet.errors)
-                    print("FORMULARIO INVALIDO.....", formdet.data)
                     return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
 
             else:
@@ -132,27 +140,30 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                 return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
 
     def modificar(request):  # update method
-        template_name = 'facturas_crearmod.html'
-        personasformset = inlineformset_factory(PersonasModel, EmpleadosModel, form='EmpleadosForm', fk_name='id',
-                                                fields=(
-                                                    'nombre', 'apellido', 'razon_social', 'direccion', 'ruc',
-                                                    'dir_geo', 'sexo', 'fecha_nac_const', 'tipo_documento',
-                                                    'nro_documento', 'fec_venc_doc_iden', 'nro_celular', 'nro_whatsapp',
-                                                    'email',), extra=1, max_num=1)
+        template_name = 'empleados_crearmod.html'
+        empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
+                                                 fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                         'contacto_emergencia',), extra=1, max_num=1)
+        emplbeneficiosformset = inlineformset_factory(EmpleadosModel, EmpleadosBeneficiosModel, form=EmpleadosBeneficiosForm, fk_name='empleado',
+                                                 fields=('estado', 'beneficio',), extra=15, max_num=15)
+
         ctx = {}
-        formcab = EmpleadosForm()
-        formdet = personasformset()
+        formcab = PersonasForm()
+        formdet = empleadosformset()
+        formdetben = emplbeneficiosformset()
 
         if request.method == 'GET':
             parametros = request.GET
-            objeto = EmpleadosModel.objects.get(pk=parametros['pk'])
+            objeto = PersonasModel.objects.get(pk=parametros['pk'])
+            objemp = EmpleadosModel.objects.get(pk=parametros['pk'])
             if objeto is not None:
-                formcab = EmpleadosForm(instance=objeto)
-                formdet = personasformset(instance=objeto)
-
+                formcab = PersonasForm(instance=objeto)
+                formdet = empleadosformset(instance=objeto)
+                formdetben = emplbeneficiosformset(instance=objemp)
                 ctx = {
                     'form': formcab,
                     'formset': formdet,
+                    'formsetbeneficios': formdetben,
                     'uuid': uuid.uuid4(),
                     'form_uuid': uuid.uuid4(),
                     'section_uuid': uuid.uuid4(),
@@ -162,22 +173,26 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                 return render(request, template_name, ctx)
 
         elif request.method == 'POST':
-            facturadetformset = inlineformset_factory(EmpleadosModel, PersonasModel, form=PersonasForm,
-                                                      fk_name='factura', fields=(
-                    'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
-                                                      max_num=15)
-
+            empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
+                                                     fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                             'contacto_emergencia',), extra=1, max_num=1)
+            emplbeneficiosformset = inlineformset_factory(EmpleadosModel, EmpleadosBeneficiosModel,
+                                                          form=EmpleadosBeneficiosForm, fk_name='empleado',
+                                                          fields=('estado', 'beneficio',), extra=15, max_num=15)
             # forms.py linea 33, revisar con Anthony, no es la manera de hacerlo.
             # facturas_crearmod.html linea 12, no debe ser la manera de hacerlo.....
-            obj = EmpleadosModel.objects.get(pk=request.POST['id'])
-            formcab = EmpleadosForm(request.POST, instance=obj)
+            obj = PersonasModel.objects.get(pk=request.POST['id'])
+            formcab = PersonasForm(request.POST, instance=obj)
+            formdetben = EmpleadosModel.objects.get(pk=request.POST['id'])
 
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
-                formdet = facturadetformset(request.POST, instance=formcab)
-                if formdet.is_valid():
+                formdet = empleadosformset(request.POST, instance=formcab)
+                formdetben = emplbeneficiosformset(request.POST, instance=formdetben)
+                if formdet.is_valid() and formdetben.is_valid():
                     formcab.save()
                     formdet.save()
+                    formdetben.save()
                     return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
                 else:
                     return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})

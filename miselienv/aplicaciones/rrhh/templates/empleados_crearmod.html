@@ -6,108 +6,39 @@
 <form id="form_{{ form_id }}" method="post">{% csrf_token %}
     <div class="container border border-1 ">
         <div class="row" style="min-width: 620px">
-            <div class="col-9 d-grid gap-2" style="min-width: 310px">
-                <div class="row g-1 align-items-center ">
-                    <div hidden>
-                        {{ form.id }}
-                    </div>
-                    <div class="row" style="width: 20%; min-width: 160px;">
-                        {{ form.personeria.label }}
-                        {{ form.personeria }}
-                    </div>
-                    <div class="row" style="width: 20%; min-width: 160px;">
-                        {{ form.nombre.label }}
-                        {{ form.nombre }}
-                    </div>
-                    <div class="row" style="width: 30%; min-width: 250px;">
-                        {{ form.apellido.label }}
-                        {{ form.apellido }}
-                    </div>
-                    <div class="row" style="width: 40%; min-width: 300px">
-                        {{ form.razon_social.label }}
-                        {{ form.razon_social }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.direccion.label }}
-                        {{ form.direccion }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.ruc.label }}
-                        {{ form.ruc }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.dir_geo.label }}
-                        {{ form.dir_geo }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.sexo.label }}
-                        {{ form.sexo }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.fecha_nac_const.label }}
-                        {{ form.fecha_nac_const }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.tipo_documento.label }}
-                        {{ form.tipo_documento }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.nro_documento.label }}
-                        {{ form.nro_documento }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.fec_venc_doc_iden.label }}
-                        {{ form.fec_venc_doc_iden }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.nro_celular.label }}
-                        {{ form.nro_celular }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.nro_whatsapp.label }}
-                        {{ form.nro_whatsapp }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ form.email.label }}
-                        {{ form.email }}
-                    </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="cabecera" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Datos Empleado
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="Beneficios" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Beneficios
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="cabecera"
+                     tabindex="0">
 
-                    {{ formset.management_form }}
+                    {% include 'empleados_crearmod_cab.html' %}
 
-                    <div hidden>
-                        {{ formset.form.id }}
-                    </div>
-                    <div class="row" style="width: 20%; min-width: 160px;">
-                        {{ formset.form.fecha_ingreso.label }}
-                        {{ formset.form.fecha_ingreso }}
-                    </div>
-                    <div class="row" style="width: 20%; min-width: 160px;">
-                        {{ formset.form.fecha_egreso.label }}
-                        {{ formset.form.fecha_egreso }}
-                    </div>
-                    <div class="row" style="width: 30%; min-width: 250px;">
-                        {{ formset.form.email.label }}
-                        {{ formset.form.email }}
-                    </div>
-                    <div class="row" style="width: 40%; min-width: 300px">
-                        {{ formset.form.contacto_emergencia.label }}
-                        {{ formset.form.contacto_emergencia }}
-                    </div>
-                    <div class="row" style="width: 10%; min-width: 120px">
-                        {{ formset.form.estado.label }}
-                        {{ formset.form.estado }}
-                    </div>
+                </div>
+                <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="Beneficios"
+                     tabindex="0">
+
+                    {% include 'empleados_beneficios.html' %}
+
                 </div>
             </div>
+
         </div>
     </div>
 
 
 </form>
-
-{{ error }}
-{{ form.error }}
-
+<hr>
 <button type="button" form="form_{{ form_id }}" class="btn btn-primary"
         onclick="guardarformulario('form_{{ form_id }}', '{{ url_guardar }}')"> Guardar
 </button>

@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.timezone import now
-from aplicaciones.base.choices import sexo, tipodocumento
-from .models import EmpleadosModel, PersonasModel
+from aplicaciones.base.choices import sexo, tipodocumento, personeria
+from .models import EmpleadosModel, PersonasModel, EmpleadosBeneficiosModel
 
 
 class EmpleadosForm(forms.ModelForm):
@@ -18,6 +18,7 @@ class EmpleadosForm(forms.ModelForm):
 
 class PersonasForm(forms.ModelForm):
     id = forms.IntegerField(required=False)
+    personeria = forms.ChoiceField(choices=personeria)
     nombre = forms.CharField(max_length=100, required=True)
     apellido = forms.CharField(max_length=100, required=True)
     razon_social = forms.CharField(max_length=200, required=True)
@@ -35,4 +36,14 @@ class PersonasForm(forms.ModelForm):
 
     class Meta:
         model = PersonasModel
+        fields = '__all__'
+
+
+class EmpleadosBeneficiosForm(forms.ModelForm):
+    id = forms.IntegerField(required=False)
+    empleado = forms.CheckboxSelectMultiple()
+    beneficio = forms.CheckboxSelectMultiple()
+
+    class Meta:
+        model = EmpleadosBeneficiosModel
         fields = '__all__'
