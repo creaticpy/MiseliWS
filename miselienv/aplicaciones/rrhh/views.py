@@ -203,6 +203,20 @@ class EmpleadosView(LoginRequiredMixin, ListView):
         # return render(request, template_name, ctx)
 
     def borrar(request):
+
+        if request.method == 'POST':
+            print("esta pio aqui?")
+            objE = EmpleadosModel.objects.get(pk=request.POST['id'])
+            objP = PersonasModel.objects.get(pk=request.POST['id'])
+            if objE is None:
+                return JsonResponse({'error': 'No existe el registro de empleado, consulte con el administrador'})
+            elif objP is None:
+                return JsonResponse({'error': 'No existe el registro de persona, consulte con el administrador'})
+            objE = objE.delete()
+            objP = objP.delete()
+            return JsonResponse({'text': "Registros Borrados", 'type': 'danger', 'timelapse': '3000'})
+
+
         context = {
             "cols": "cols",
             "plantilla": "loader.render_to_string(template_name)",

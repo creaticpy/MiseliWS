@@ -127,7 +127,8 @@ class FacturasView(LoginRequiredMixin, ListView):
                     formcab.save()
                     formdet.save()
                 else:
-                    return JsonResponse({'text': 'El documento no se ha guardado', 'type': 'primary', 'timelapse': '3000'})
+                    return JsonResponse(
+                        {'text': 'El documento no se ha guardado', 'type': 'primary', 'timelapse': '3000'})
 
             else:
                 print("FORMULARIO INVALIDO", formcab.errors)
@@ -168,7 +169,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         elif request.method == 'POST':
             facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm,
                                                       fk_name='factura', fields=(
-                    'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
+                'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
                                                       max_num=15)
 
             # forms.py linea 33, revisar con Anthony, no es la manera de hacerlo.
