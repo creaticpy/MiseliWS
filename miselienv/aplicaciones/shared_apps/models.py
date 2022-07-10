@@ -59,6 +59,7 @@ class SubMenusSistemasModel(Maestros):
     nombre_modelo           = models.CharField(max_length=100, blank=False, null=False)
     orden_visualizacion     = models.PositiveIntegerField(default=0)
     url                     = models.CharField(max_length=100, blank=False, null=False)
+    charger_function        = models.CharField(max_length=100, blank=False, null=False, default="Elegir funcion Adecuada")
 
     class Meta:
         verbose_name = "Sub Modulo SAAS"

@@ -3,8 +3,8 @@ const link_tabs = document.getElementById("linktabs")
 const contenedor_ul = document.getElementById("idul")
 
 // no sé por qué, pero al crear el listener correctamente tenemos que invertir el orden de los parametros(Event, "menu")
-link_tabs.addEventListener('click', crear_tab.bind(Event, "menu")) // esto es para el menu
-contenedor_ul.addEventListener('click', seleccionar_tab.bind(Event))
+link_tabs.addEventListener('click', gestionarTabs.bind(Event)) // esto es para el menu
+// contenedor_ul.addEventListener('click', seleccionar_tab.bind(Event))
 
 function seleccionar_tab(event) {
 
@@ -28,115 +28,27 @@ function seleccionar_tab(event) {
     }
 }
 
-function crear_tab(origenes, evento) {
-    let element = ""
-    let tab_text = ""
-    let dir_url = ""
+function gestionarTabs(event) { // event --> click y dentro del evento se encuentra el elemento que lo origina.
+    try {
 
-    if (origenes === "menu" && evento.target.tagName === 'A') {
-        element = evento.target
-        tab_text = element.textContent
-    } else if (origenes === "datatables") {
-        if (evento.target.tagName === 'I' || evento.target.tagName === 'SPAN') {
-            element = evento.target.parentNode
-            if (element.tagName !== 'BUTTON') {
-                console.log("Esta es una exception, debemos tratarla")
-                return
-            }
-        } else if (evento.target.tagName === 'BUTTON') {
-            element = evento.target
-        } else {
-            return
-        }
-        if (element.classList.contains('agregar')) {
-            tab_text = element.attributes.tab_text.value
-            console.log("apretaste Agregar")
-        } else if (element.classList.contains('editar')) {
-            tab_text = element.attributes.tab_text.value
-            console.log("apretaste Editar")
-        } else if (element.classList.contains("eliminar")) {
-            tab_text = element.attributes.tab_text.value
-            console.log("apretaste Eliminar")
-        }
-    } else {
-        return
-    }
-    dir_url = element.attributes.url.value
+        let firedElement = event.target
+        let abriren = firedElement.attributes.abrir_en.value
+        let tab_text = firedElement.attributes.tab_text.value
+        if (abriren !== "") { // solo aceptamos click de quienes tenga configurado donde abrirse...
+            if (VerifTab(firedElement) === false) {
+                let contenedorDestino = AgregarTab(abriren, tab_text)
+                //Cargamos de contenido el tab creado
+                CargarTabs(contenedorDestino, firedElement)
+            } else {
+                // AgregarTab("Empleados") no se todavia que pasa. Tal vez nada.
 
-
-    if ((element.tagName === 'A' && origenes === 'menu') || (element.tagName === 'BUTTON' && origenes === 'datatables')) {
-
-        let cant = document.querySelectorAll(`div[menu_id="${element.id}"]`)
-        if (cant.length === 0) {
-
-            let itemLi = document.createElement('li')
-            let itemDiv = document.createElement('div')
-            let randomNro = randomNumber()
-
-            itemLi.textContent = tab_text
-            itemLi.classList.add('inactivo')
-            itemLi.setAttribute('id', randomNumber())
-            itemLi.setAttribute('menu_id', element.id)
-            itemLi.setAttribute('tab_id', randomNro)
-
-            contenedor_ul.appendChild(itemLi)
-
-            itemDiv.classList.add('bloque')
-            itemDiv.classList.add('inactivo')
-            itemDiv.setAttribute('id', randomNumber())
-            itemDiv.setAttribute('menu_id', element.id)
-            itemDiv.setAttribute('block_id', randomNro)
-
-            div.appendChild(itemDiv)
-
-
-            let menu_id = document.querySelectorAll(`div[menu_id="${element.id}"]`)
-            let block = document.getElementById(menu_id.item(0).attributes.id.value)
-
-            itemLi.click()
-
-            if (origenes === "menu") {
-                axios.get(dir_url, {
-                    params: {tablacreada: "yes"}
-                }).then(function (resp) {
-
-
-                    let cols = resp.data["cols"]
-                    block.innerHTML = resp.data["plantilla"]
-                    let tabla = block.getElementsByTagName("table")
-                    load_tables(dir_url, cols, tabla.item(0).id, resp.data['url_agregar_registro'], block, resp.data["tab_texto"])
-
-
-                }).catch(function (err) {
-                    console.log(err, "Error en Axios Tabs.js =(")
-                    alert(err + " - Error en Axios Tabs.js")
-                })
-
-            } else if (origenes === "datatables") {
-                let tr = element.parentNode.parentNode
-                let parent = tr.querySelector(".dpass")
-                axios.get(dir_url, {
-                    params: {pk: parent.textContent}
-                }).then(function (resp) {
-
-                    block.innerHTML = resp.data
-
-                }).catch(function (err) {
-                    console.log(err, "Error en Axios Tabs.js =(")
-                    alert(err + " - Error en Axios Tabs.js")
-                }).then(function () {
-
-                    itemLi.click()
-
-                })
             }
 
-        } else {
-            let menu_id = document.querySelectorAll(`li[menu_id="${event.target.id}"]`)
-            let li = document.getElementById(menu_id[0].attributes.id.value)
-            li.click()
         }
+    } catch (e) {
+
     }
+
 }
 
 
@@ -157,7 +69,7 @@ function cerrar_tab() {
 }
 
 function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_texto) {
-
+    let randomNum = randomNumber()
     let datatable = $('#' + id_tabla).DataTable({
         "aoColumnDefs": [{"sClass": "dpass", "aTargets": [0]}],
         "serverSide": true,
@@ -178,7 +90,7 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_t
                     });
 
                     let tbody = document.getElementById(id_tabla).getElementsByTagName('tbody')
-                    tbody.item(0).addEventListener('click', crear_tab.bind(Event, "datatables"))
+                    tbody.item(0).addEventListener('click', gestionarTabs.bind(Event))
                 }
             )
         },
@@ -187,8 +99,15 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_t
         "buttons": [
             {
                 text: "Agregar",
-                attr: {href: '#', url: url_agregar_registro, tab_text: tab_texto},
-                className: "agregar"
+                attr: {
+                    id: randomNum,
+                    abrir_en: "tab-principal",
+                    href: '#',
+                    url: url_agregar_registro,
+                    tab_text: tab_texto,
+                    charger_function: 'cf',
+                },
+                className: "agregar",
                 // action: function (e, dt, node, config) {
                 //     crear_tab("boton_agregar", id_tabla)
                 // }
@@ -196,14 +115,121 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_t
             }
         ]
     })
-
-    let item = block.getElementsByClassName('dt-buttons').item(0).getElementsByClassName('agregar').item(0)
-    item.addEventListener('click', crear_tab.bind(Event, 'datatables'))
-
+    let itemAgregar = document.getElementById(randomNum)
+    itemAgregar.innerHTML = "Agregar" // hacemos este artilujo mientras.
+    itemAgregar.addEventListener('click', gestionarTabs.bind(Event))
 
 
 }
 
 function randomNumber() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2)
+}
+
+
+function AgregarTab(abrir_en, descripcion) {
+    let tab = document.getElementById(abrir_en) // para estos ejemplos, abriremos en tab-principal
+    let tab_contenido = document.getElementById("tab-contenido")
+    let html_cab = ''
+    let html_det = ''
+    let randomNro = randomNumber()
+    let randomId = randomNumber()
+    // cabecera
+    html_cab += '<li class="nav-item" role="presentation">'
+    html_cab += '    <button class="nav-link" id=' + '"' + randomNro + '"' + ' data-bs-toggle="tab" data-bs-target="#' + randomId + '"' + '  type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" tab_text="' + descripcion + '">' + descripcion
+    html_cab += '    </button>'
+    html_cab += '</li>'
+
+    tab.insertAdjacentHTML("beforeend", html_cab)
+    // tab_principal.innerHTML =html_cab
+
+    // detalle
+    html_det += '<div class="tab-pane fade" id=' + '"' + randomId + '"' + ' role="tabpanel" aria-labelledby=' + '"' + randomNro + '"' + ' tabIndex="0">' + descripcion
+    html_det += '</div>'
+
+    tab_contenido.insertAdjacentHTML("beforeend", html_det)
+    // tab_principal_contenido.innerHTML = html_det
+
+    Goto = document.getElementById(randomNro)
+    containerElement = document.getElementById(randomId)
+    Goto.click()
+    return containerElement // id del nuevo contenedor creado
+}
+
+function VerifTab(element) { // con esta funcion verificamos si ya esta abierto el tab solicitado
+    let abrir_en = element.attributes.abrir_en.value
+
+    if (abrir_en === 'tab-principal') {
+        let tabPrincipal = document.getElementById('tab-principal')
+        let tab_text = element.attributes.tab_text.value
+        let tab = tabPrincipal.querySelectorAll(`#tab-principal button[tab_text="${tab_text}"]`)
+
+        if (typeof (tab[0]) === "object") {
+            tab[0].click()
+        } else {
+            return false
+
+        }
+    }
+}
+
+function CargarTabs(contenedorDestino, firedElement) {
+    let dir_url = ""
+    switch (firedElement.attributes.charger_function.value) {
+        default:
+
+            alert("Debe seleccionar un Cargador de funciones.")
+            return
+
+        case 'ctc':
+
+            dir_url = firedElement.attributes.url.value
+            CargarTablasConsultas(dir_url, contenedorDestino)
+            return
+
+        case 'cf':
+
+            dir_url = firedElement.attributes.url.value
+            CargarFormularios(dir_url, contenedorDestino)
+            return
+
+    }
+
+
+    function CargarTablasConsultas(dir_url, contenedorDestino) {
+        axios.get(dir_url, {
+            params: {tablacreada: "yes"}
+        }).then(function (resp) {
+
+
+            let cols = resp.data["cols"]
+            contenedorDestino.innerHTML = resp.data["plantilla"]
+            let tabla = contenedorDestino.getElementsByTagName("table")
+            load_tables(dir_url, cols, tabla.item(0).id, resp.data['url_agregar_registro'], contenedorDestino, resp.data["tab_texto"])
+
+
+        }).catch(function (err) {
+            console.log(err, "Error en Axios Tabs.js =(")
+            alert(err + " - Error en Axios Tabs.js")
+        })
+    }
+
+    function CargarFormularios(dir_url, contenedorDestino) {
+        console.log("entraaaaa pio aqui?=", dir_url)
+        axios.get(dir_url, {
+            // params: {pk: parent.textContent} para agregar no necesitamos enviar pk
+        }).then(function (resp) {
+
+            contenedorDestino.innerHTML = resp.data
+
+        }).catch(function (err) {
+            console.log(err, "Error en Axios Tabs.js =(")
+            alert(err + " - Error en Axios Tabs.js")
+        }).then(function () {
+
+            // itemLi.click() no recuerdo para que es esta linea
+
+        })
+    }
+
 }

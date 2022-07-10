@@ -4,25 +4,24 @@
 {#{% simple_tag_uuid as asd %} #}
 {#{{ asd }}#}
 
-<div class="flex-shrink-0 p-3 bg-white" style="width: 280px;">
+<div class="flex-shrink-0 p-3 bg-gradient h-100">
     <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
         <svg class="bi me-2" width="30" height="24">
-            <use xlink:href="#bootstrap"></use>
+{#            <use xlink:href="#bootstrap"></use>#}
         </svg>
         <span class="fs-5 fw-semibold">SAAS SYSTEMS</span>
     </a>
-    <ul id="linktabs" class="list-unstyled ps-0">
+    <ul id="linktabs" class="list-unstyled ps-0 border-end border-dark h-75">
         {% for x in menu %}
             <li class="mb-1">
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#{{ x.desc_larga|cut:" " }}" aria-expanded="false">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#{{ x.desc_larga|cut:" " }}" aria-expanded="false">
                     {{ x.desc_larga }}
                 </button>
                 <div class="collapse" id="{{ x.desc_larga|cut:" " }}" style="">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         {% for y in sub_menu %}
                             {% if x.id == y.menu.id %}
-                                <li><a id={% simple_tag_uuid %} href="#" url="{{ y.url }}" class="link-dark rounded">{{ y.desc_larga }}</a></li>
+                                <li><a id={% simple_tag_uuid %} charger_function="{{ y.charger_function }}" abrir_en="tab-principal" href="#" url="{{ y.url }}" class="link-dark rounded" tab_text="{{ y.desc_larga }}">{{ y.desc_larga }}</a></li>
                             {% endif %}
                         {% endfor %}
                     </ul>

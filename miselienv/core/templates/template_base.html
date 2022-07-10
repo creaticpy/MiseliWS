@@ -25,18 +25,17 @@
             display: none;
         }
 
-        .row {
-            background-color: #e9ecef;
-        }
-
-        .row > div {
-            border: solid 2px black;
-        }
-
-        .row > .head {
-            border: solid 2px black;
-        }
-
+        {#.row {#}
+        {#    background-color: #e9ecef;#}
+        {#}#}
+        {##}
+        {#.row > div {#}
+        {#    border: solid 2px black;#}
+        {#}#}
+        {##}
+        {#.row > .head {#}
+        {#    border: solid 2px black;#}
+        {#}#}
 
     </style>
 
@@ -50,10 +49,11 @@
     <div class="container-fluid" style="height: 100vh">
         <div class="row h-100">
             <div class="row head" style="height: 80px">
-                <div class="col-lg-12">cabecera
+                <div class="col-lg-12">
+                        cabecera
                 </div>
             </div>
-            <div class="row h-100" style="height: 380px">
+            <div class="row h-100 bg-light" style="height: 380px">
                 <div class="col-lg-2 h-100">
                     {% include 'menu.html' %}
                 </div>
