@@ -66,7 +66,7 @@ class FacturasView(LoginRequiredMixin, ListView):
                 {"data": "nro_documento"},
                 {"data": "cotizacion"},
                 {
-                    "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='ventas/modificar_facturas' tab_text='Mod Facturas'><i class='fa bi-pencil-square'></i></button>"},
+                    "defaultContent": "<button type='button' class='editar btn btn-primary'><i charger_function='fm' abrir_en='tab-principal' href='#' url='ventas/modificar_facturas' tab_text='Mod Facturas' class='fa bi-pencil-square'></i></button>"},
                 {
                     "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='ventas/borrar_facturas' tab_text='Elim Facturas' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
             ]

@@ -1,32 +1,5 @@
-const div = document.getElementById('detalle-tabs')
 const link_tabs = document.getElementById("linktabs")
-const contenedor_ul = document.getElementById("idul")
-
-// no sé por qué, pero al crear el listener correctamente tenemos que invertir el orden de los parametros(Event, "menu")
 link_tabs.addEventListener('click', gestionarTabs.bind(Event)) // esto es para el menu
-// contenedor_ul.addEventListener('click', seleccionar_tab.bind(Event))
-
-function seleccionar_tab(event) {
-
-    if (event.target.tagName === 'LI') {
-        let li = document.querySelectorAll('.contenedor-ul > li.activo')
-        let bloque = document.querySelectorAll('.detalle-tabs > div.activo')
-        let v_tab_id = event.target.attributes.tab_id.value
-
-        li.forEach((cadaLi, i) => { // inactivamos los li, todos los que esten como activos, deberia haber siempre solo 1
-            li[i].classList.replace('activo', 'inactivo')
-            bloque[i].classList.replace('activo', 'inactivo')
-        })
-
-        li = document.querySelectorAll(`.contenedor-ul > li[tab_id="${v_tab_id}"]`) // como debe haber la misma cantidad de bloques y tabs accedemos al par por medio de la posicion
-        bloque = document.querySelectorAll(`.detalle-tabs > div[block_id="${v_tab_id}"]`)
-
-        li.forEach((cadaTab, i) => {
-            li[i].classList.replace('inactivo', 'activo')
-            bloque[i].classList.replace('inactivo', 'activo')
-        })
-    }
-}
 
 function gestionarTabs(event) { // event --> click y dentro del evento se encuentra el elemento que lo origina.
     try {
@@ -54,17 +27,22 @@ function gestionarTabs(event) { // event --> click y dentro del evento se encuen
 
 function cerrar_tab() {
 
-    let elem_tab = document.getElementById('idul').getElementsByClassName("activo")
-    let elem_block = document.getElementById('detalle-tabs').getElementsByClassName("activo")
-    if (elem_tab[0].id === 'tab_dashboard') {
+    let elem_tab = document.getElementById('tab-principal').getElementsByClassName("active")
+    let elem_block = document.getElementById('tab-contenido').getElementsByClassName("active")
+    if (elem_tab[0].id === 'Dashboard') {
         alert("Tab Dashboard no puede ser cerrado")
     } else {
-        let tab = document.getElementById(elem_tab[0].id)
+        let tab = document.getElementById(elem_tab[0].id).parentNode
         let block = document.getElementById(elem_block[0].id)
         let tab_destino = tab.previousElementSibling
+        console.log(tab)
+        console.log(block)
+        console.log(tab_destino)
+        console.log(tab_destino.getElementsByTagName("button"))
         tab.remove()
         block.remove()
-        tab_destino.click()
+        tab_destino.getElementsByTagName("button").item(0).click()
+
     }
 }
 
@@ -174,23 +152,27 @@ function VerifTab(element) { // con esta funcion verificamos si ya esta abierto 
 }
 
 function CargarTabs(contenedorDestino, firedElement) {
-    let dir_url = ""
+    let dir_url = firedElement.attributes.url.value
+
     switch (firedElement.attributes.charger_function.value) {
-        default:
-
-            alert("Debe seleccionar un Cargador de funciones.")
-            return
-
         case 'ctc':
 
-            dir_url = firedElement.attributes.url.value
             CargarTablasConsultas(dir_url, contenedorDestino)
             return
 
         case 'cf':
 
-            dir_url = firedElement.attributes.url.value
             CargarFormularios(dir_url, contenedorDestino)
+            return
+
+        case 'fm':
+
+            FormularioModificacion(dir_url, firedElement, contenedorDestino)
+            return
+
+        default:
+
+            alert("Debe seleccionar un Cargador de funciones.")
             return
 
     }
@@ -215,9 +197,27 @@ function CargarTabs(contenedorDestino, firedElement) {
     }
 
     function CargarFormularios(dir_url, contenedorDestino) {
-        console.log("entraaaaa pio aqui?=", dir_url)
         axios.get(dir_url, {
             // params: {pk: parent.textContent} para agregar no necesitamos enviar pk
+        }).then(function (resp) {
+
+            contenedorDestino.innerHTML = resp.data
+
+        }).catch(function (err) {
+            console.log(err, "Error en Axios Tabs.js =(")
+            alert(err + " - Error en Axios Tabs.js")
+        }).then(function () {
+
+            // itemLi.click() no recuerdo para que es esta linea
+
+        })
+    }
+
+    function FormularioModificacion(dir_url, firedElement, contenedorDestino) {
+        let tr = firedElement.parentNode.parentNode.parentNode
+        let parent = tr.querySelector(".dpass")
+        axios.get(dir_url, {
+            params: {pk: parent.textContent}
         }).then(function (resp) {
 
             contenedorDestino.innerHTML = resp.data
