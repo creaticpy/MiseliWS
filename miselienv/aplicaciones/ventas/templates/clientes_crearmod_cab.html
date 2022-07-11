@@ -1,0 +1,110 @@
+<div class="col-12 d-grid gap-2" style="min-width: 310px">
+                <div class="row g-1 align-items-center ">
+                    <div hidden>
+                        {{ form.id }}
+                    </div>
+                    <div class="row" style="width: 20%; min-width: 160px;">
+                        {{ form.personeria.label }}
+                        {{ form.personeria }}
+                    </div>
+                    <div class="row" style="width: 20%; min-width: 120px">
+                        {{ form.sexo.label }}
+                        {{ form.sexo }}
+                    </div>
+                </div>
+                <div class="row g-1 align-items-center ">
+                    <div class="row" style="width: 30%; min-width: 160px;">
+                        {{ form.nombre.label }}
+                        {{ form.nombre }}
+                    </div>
+                    <div class="row" style="width: 30%; min-width: 250px;">
+                        {{ form.apellido.label }}
+                        {{ form.apellido }}
+                    </div>
+                    <div class="row" style="width: 40%; min-width: 300px">
+                        {{ form.razon_social.label }}
+                        {{ form.razon_social }}
+                    </div>
+                </div>
+                <div class="row g-1 align-items-center ">
+                    <div class="row" style="width: 60%; min-width: 300px">
+                        {{ form.direccion.label }}
+                        {{ form.direccion }}
+                    </div>
+                    <div class="row" style="width: 40%; min-width: 400px">
+                        {{ form.dir_geo.label }}
+                        {{ form.dir_geo }}
+                    </div>
+                </div>
+                <div class="row g-1 align-items-center ">
+                    <div class="row" style="width: 20%; min-width: 60px">
+                        {{ form.fecha_nac_const.label }}
+                        {{ form.fecha_nac_const }}
+                    </div>
+                    <div class="row" style="width: 40%; min-width: 120px">
+                        {{ form.tipo_documento.label }}
+                        {{ form.tipo_documento }}
+                    </div>
+                    <div class="row" style="width: 20%; min-width: 120px">
+                        {{ form.nro_documento.label }}
+                        {{ form.nro_documento }}
+                    </div>
+                    <div class="row" style="width: 20%; min-width: 120px">
+                        {{ form.fec_venc_doc_iden.label }}
+                        {{ form.fec_venc_doc_iden }}
+                    </div>
+                </div>
+                <div class="row g-1 align-items-center ">
+                    <div class="row" style="width: 20%; min-width: 120px">
+                        {{ form.ruc.label }}
+                        {{ form.ruc }}
+                    </div>
+
+                    <div class="row" style="width: 20%; min-width: 120px">
+                        {{ form.nro_celular.label }}
+                        {{ form.nro_celular }}
+                    </div>
+                    <div class="row" style="width: 20%; min-width: 120px">
+                        {{ form.nro_whatsapp.label }}
+                        {{ form.nro_whatsapp }}
+                    </div>
+                    <div class="row" style="width: 30%; min-width: 120px">
+                        Correo Empresa
+                        {{ form.email }}
+                    </div>
+                </div>
+                <div class="row g-1 align-items-center ">
+
+                    <table id="formset" class="form">
+                        {{ formset.management_form }} {# Nooooooooooo olvidar esta linea #}
+                        {% for form in formset.forms %}
+                            {% if forloop.first %}
+                                <thead>
+                                <tr>
+                                    {% for field in form.visible_fields %}
+                                        <th>{{ field.label|capfirst }}</th>
+                                    {% endfor %}
+                                </tr>
+                                </thead>
+                            {% endif %}
+                            <tr class="{% cycle 'row1' 'row2' %}">
+                                {% for field in form.visible_fields %}
+                                    <td>
+                                        {#                        Include the hidden fields in the form#}
+                                        {% if forloop.first %}
+                                            {% for hidden in form.hidden_fields %}
+                                                {{ hidden }}
+                                            {% endfor %}
+                                        {% endif %}
+                                        {{ field.errors.as_ul }}
+                                        {{ field }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+
+
+                </div>
+            </div>

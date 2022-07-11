@@ -10,9 +10,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 from django.views.generic import ListView
+from aplicaciones.rrhh.forms import PersonasForm
+from aplicaciones.rrhh.models import PersonasModel
 
-from .forms import FacturasForm, FacturasDetForm
-from .models import FacturasModel, FacturasDetModel
+from .forms import FacturasForm, FacturasDetForm, ClientesForm
+from .models import FacturasModel, FacturasDetModel, ClientesModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
 
@@ -193,6 +195,190 @@ class FacturasView(LoginRequiredMixin, ListView):
         # return render(request, template_name, ctx)
 
     def borrar(request):
+        context = {
+            "cols": "cols",
+            "plantilla": "loader.render_to_string(template_name)",
+        }
+        return JsonResponse(context)
+
+
+class ClientesView(LoginRequiredMixin, ListView):
+    redirect = ""
+
+    def consultas(request):
+        template_name = 'clientes_ld.html'
+        tabla_creada = ""
+        url_agregar_registro = "ventas/agregar_clientes"
+        tab_texto = "Cargar Clientes"
+
+        def get_queryset(filtro, order_by):
+            qs = ClientesModel.objects.all()
+            qs = qs.filter(Q(estado=True),
+                           Q(id__nombre__icontains=filtro) |
+                           Q(id__apellido__icontains=filtro) |
+                           Q(id__nro_documento__icontains=filtro) |
+                           Q(id__razon_social__icontains=filtro)
+                           ).values("id", "id__nombre", "id__apellido", "ruc",
+                                    "id__email", "id__direccion", "id__nro_documento",
+                                    "id__nro_celular",
+                                    ).order_by("{order_by}".format(order_by=order_by))
+            return qs
+
+        try:  # entra 2 veces cuando es creada la tabla, la primera vez el parametro "tablacreada" existe y no hay problemas, la segunda vez ya no existe y da error.
+            tabla_creada = request.GET['tablacreada']
+        except:
+            pass
+
+        if tabla_creada == "yes":
+            cols = [
+                {"data": "id"},
+                {"data": "id__nombre"},
+                {"data": "id__apellido"},
+                {"data": "ruc"},
+                {"data": "id__email"},
+                {"data": "id__direccion"},
+                {"data": "id__nro_documento"},
+                {"data": "id__nro_celular"},
+                {
+                    "defaultContent": "<button type='button' class='editar btn btn-primary'><i charger_function='fm' abrir_en='tab-principal' href='#' url='ventas/modificar_clientes' tab_text='Mod Cliente' class='fa bi-pencil-square'></i></button>"},
+                {
+                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
+            ]
+            context = {
+                "cols": cols,
+                "plantilla": loader.render_to_string(template_name),
+                "url_agregar_registro": url_agregar_registro,
+                "tab_texto": tab_texto,
+            }
+
+            return JsonResponse(context)
+
+        inicio = int(request.GET.get('inicio'))
+        fin = int(request.GET.get('limite'))
+        filtro = request.GET.get('filtro')
+        order_by = request.GET.get('order_by')
+        data = get_queryset(filtro, order_by)
+        list_data = []
+
+        for indice, valor in enumerate(data[inicio:inicio + fin], inicio):
+            list_data.append(valor)
+
+        context = {
+            'count': data.count(),
+            'objects': list_data
+        }
+        # todo default es llamado cuando un parametro no es convertido a json entonces se lo convierte a str y luego se reprocesa
+        return HttpResponse(json.dumps(context, default=myconverter), 'application/json')
+
+    def agregar(request):
+        template_name = 'clientes_crearmod.html'
+        clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
+                                                 fields=('estado', 'ruc',), extra=1, max_num=1)
+
+        if request.method == 'GET':
+            formcab = PersonasForm()
+            formdet = clientesformset()
+
+            ctx = {
+                'form': formcab,
+                'formset': formdet,
+                'uuid': uuid.uuid4(),
+                'form_uuid': uuid.uuid4(),
+                'section_uuid': uuid.uuid4(),
+                'nav_uuid': uuid.uuid4(),
+                'url_guardar': 'rrhh/agregar_empleados',
+
+            }
+            return render(request, template_name, ctx)
+
+        if request.method == 'POST':
+            formcab = PersonasForm(request.POST)
+            if formcab.is_valid():
+                formcab = formcab.save(commit=False)
+                formdet = clientesformset(request.POST, instance=formcab)
+                if formdet.is_valid():
+                    formcab.save()
+                    formdet.save()
+                    return JsonResponse({'text': 'Registro Guardado...', 'type': 'primary', 'timelapse': '3000'})
+                else:
+                    return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
+
+            else:
+                print("FORMULARIO INVALIDO", formcab.errors)
+                return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
+
+    def modificar(request):  # update method
+        template_name = 'clientes_crearmod.html'
+        empleadosformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
+                                                 fields=('estado', 'ruc',), extra=1, max_num=1)
+
+
+        ctx = {}
+        formcab = PersonasForm()
+        formdet = empleadosformset()
+
+
+        if request.method == 'GET':
+            parametros = request.GET
+            objeto = PersonasModel.objects.get(pk=parametros['pk'])
+            objemp = ClientesModel.objects.get(pk=parametros['pk'])
+            if objeto is not None:
+                formcab = PersonasForm(instance=objeto)
+                formdet = empleadosformset(instance=objeto)
+
+                ctx = {
+                    'form': formcab,
+                    'formset': formdet,
+                    'uuid': uuid.uuid4(),
+                    'form_uuid': uuid.uuid4(),
+                    'section_uuid': uuid.uuid4(),
+                    'nav_uuid': uuid.uuid4(),
+                    'url_guardar': 'rrhh/modificar_empleados',
+                }
+                return render(request, template_name, ctx)
+
+        elif request.method == 'POST':
+            empleadosformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
+                                                     fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                             'contacto_emergencia',), extra=1, max_num=1)
+
+
+            obj = PersonasModel.objects.get(pk=request.POST['id'])
+            formcab = PersonasForm(request.POST, instance=obj)
+            # formdetben = EmpleadosModel.objects.get(pk=request.POST['id'])
+
+            if formcab.is_valid():
+                formcab = formcab.save(commit=False)
+                formdet = empleadosformset(request.POST, instance=formcab)
+                # formdetben = emplbeneficiosformset(request.POST, instance=formdetben)
+                if formdet.is_valid():
+                    formcab.save()
+                    formdet.save()
+
+                    return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
+                else:
+                    return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
+
+            else:
+                return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
+
+        # return render(request, template_name, ctx)
+
+    def borrar(request):
+
+        if request.method == 'POST':
+            print("esta pio aqui?")
+            objE = ClientesModel.objects.get(pk=request.POST['id'])
+            objP = PersonasModel.objects.get(pk=request.POST['id'])
+            if objE is None:
+                return JsonResponse({'error': 'No existe el registro de empleado, consulte con el administrador'})
+            elif objP is None:
+                return JsonResponse({'error': 'No existe el registro de persona, consulte con el administrador'})
+            objE = objE.delete()
+            objP = objP.delete()
+            return JsonResponse({'text': "Registros Borrados", 'type': 'danger', 'timelapse': '3000'})
+
+
         context = {
             "cols": "cols",
             "plantilla": "loader.render_to_string(template_name)",

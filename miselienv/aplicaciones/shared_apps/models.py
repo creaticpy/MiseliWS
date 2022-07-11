@@ -56,7 +56,7 @@ class MenusSistemaModel(Maestros):
 class SubMenusSistemasModel(Maestros):
     menu                    = models.ForeignKey(MenusSistemaModel, on_delete=settings.DB_ON_DELETE_TRANS)
     clasificacion_menu      = models.ForeignKey(ClasificacionesMenusModel, on_delete=settings.DB_ON_DELETE_TRANS)
-    nombre_modelo           = models.CharField(max_length=100, blank=False, null=False)
+    # nombre_modelo           = models.CharField(max_length=100, blank=False, null=False) Creo que no lo vamos a necesitar.
     orden_visualizacion     = models.PositiveIntegerField(default=0)
     url                     = models.CharField(max_length=100, blank=False, null=False)
     charger_function        = models.CharField(max_length=100, blank=False, null=False, default="Elegir funcion Adecuada")

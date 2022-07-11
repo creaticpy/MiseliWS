@@ -55,6 +55,7 @@ class ClientesSucursalesModel(Maestros):
     observaciones   = models.CharField(max_length=1000, blank=True, null=True)
     telefono        = models.CharField(max_length=100, blank=True, null=True)
     direccion       = models.CharField(max_length=1000)
+    dir_geo         = models.CharField(max_length=1000, blank=True, null=True, verbose_name="Ubicacion GPS")
     encargado       = models.ForeignKey(PersonasModel, on_delete=settings.DB_ON_DELETE_TRANS, verbose_name="Encargado/a")
 
     desc_larga = ""

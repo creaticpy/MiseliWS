@@ -1,5 +1,9 @@
-const link_tabs = document.getElementById("linktabs")
-link_tabs.addEventListener('click', gestionarTabs.bind(Event)) // esto es para el menu
+const const_id_menu_principal = document.getElementById("id_menu_principal")
+const_id_menu_principal.addEventListener('click', gestionarTabs.bind(Event))
+
+function randomNumber() {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2)
+}
 
 function gestionarTabs(event) { // event --> click y dentro del evento se encuentra el elemento que lo origina.
     try {
@@ -22,28 +26,6 @@ function gestionarTabs(event) { // event --> click y dentro del evento se encuen
 
     }
 
-}
-
-
-function cerrar_tab() {
-
-    let elem_tab = document.getElementById('tab-principal').getElementsByClassName("active")
-    let elem_block = document.getElementById('tab-contenido').getElementsByClassName("active")
-    if (elem_tab[0].id === 'Dashboard') {
-        alert("Tab Dashboard no puede ser cerrado")
-    } else {
-        let tab = document.getElementById(elem_tab[0].id).parentNode
-        let block = document.getElementById(elem_block[0].id)
-        let tab_destino = tab.previousElementSibling
-        console.log(tab)
-        console.log(block)
-        console.log(tab_destino)
-        console.log(tab_destino.getElementsByTagName("button"))
-        tab.remove()
-        block.remove()
-        tab_destino.getElementsByTagName("button").item(0).click()
-
-    }
 }
 
 function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_texto) {
@@ -84,6 +66,7 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_t
                     url: url_agregar_registro,
                     tab_text: tab_texto,
                     charger_function: 'cf',
+                    style: "margin-top: 10px; ",
                 },
                 className: "agregar",
                 // action: function (e, dt, node, config) {
@@ -100,11 +83,6 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_t
 
 }
 
-function randomNumber() {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2)
-}
-
-
 function AgregarTab(abrir_en, descripcion) {
     let tab = document.getElementById(abrir_en) // para estos ejemplos, abriremos en tab-principal
     let tab_contenido = document.getElementById("tab-contenido")
@@ -112,6 +90,7 @@ function AgregarTab(abrir_en, descripcion) {
     let html_det = ''
     let randomNro = randomNumber()
     let randomId = randomNumber()
+
     // cabecera
     html_cab += '<li class="nav-item" role="presentation">'
     html_cab += '    <button class="nav-link" id=' + '"' + randomNro + '"' + ' data-bs-toggle="tab" data-bs-target="#' + randomId + '"' + '  type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false" tab_text="' + descripcion + '">' + descripcion
@@ -191,8 +170,8 @@ function CargarTabs(contenedorDestino, firedElement) {
 
 
         }).catch(function (err) {
-            console.log(err, "Error en Axios Tabs.js =(")
-            alert(err + " - Error en Axios Tabs.js")
+            console.log(err, "Error en Axios Tabs 1.js =(")
+            alert(err + " - Error en Axios Tabs 1.js")
         })
     }
 
@@ -204,8 +183,8 @@ function CargarTabs(contenedorDestino, firedElement) {
             contenedorDestino.innerHTML = resp.data
 
         }).catch(function (err) {
-            console.log(err, "Error en Axios Tabs.js =(")
-            alert(err + " - Error en Axios Tabs.js")
+            console.log(err, "Error en Axios Tabs 2.js =(")
+            alert(err + " - Error en Axios Tabs 2.js")
         }).then(function () {
 
             // itemLi.click() no recuerdo para que es esta linea
@@ -223,8 +202,8 @@ function CargarTabs(contenedorDestino, firedElement) {
             contenedorDestino.innerHTML = resp.data
 
         }).catch(function (err) {
-            console.log(err, "Error en Axios Tabs.js =(")
-            alert(err + " - Error en Axios Tabs.js")
+            console.log(err, "Error en Axios Tabs 3.js =(")
+            alert(err + " - Error en Axios Tabs 3.js")
         }).then(function () {
 
             // itemLi.click() no recuerdo para que es esta linea
@@ -232,4 +211,22 @@ function CargarTabs(contenedorDestino, firedElement) {
         })
     }
 
+}
+
+function cerrar_tab() {
+
+    let elem_tab = document.getElementById('tab-principal').getElementsByClassName("active")
+    let elem_block = document.getElementById('tab-contenido').getElementsByClassName("active")
+    if (elem_tab[0].id === 'Dashboard') {
+        alert("Tab Dashboard no puede ser cerrado")
+    } else {
+        let tab = document.getElementById(elem_tab[0].id).parentNode
+        let block = document.getElementById(elem_block[0].id)
+        let tab_destino = tab.previousElementSibling
+
+        tab.remove()
+        block.remove()
+        tab_destino.getElementsByTagName("button").item(0).click()
+
+    }
 }

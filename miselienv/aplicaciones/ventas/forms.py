@@ -103,3 +103,9 @@ class FacturasDetForm(forms.ModelForm):
     class Meta:
         model = FacturasDetModel
         fields = '__all__'
+
+
+class ClientesForm(forms.ModelForm):
+    class Meta:
+        model = ClientesModel
+        fields = '__all__'

@@ -66,6 +66,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                     "defaultContent": "<button type='button' class='editar btn btn-primary'><i charger_function='fm' abrir_en='tab-principal' href='#' url='rrhh/modificar_empleados' tab_text='Mod Empleado' class='fa bi-pencil-square'></i></button>"},
                 {
                     "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
+
             #     "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='rrhh/modificar_empleados' tab_text='Mod Empleado'><i class='fa bi-pencil-square'></i></button>"},
             # {
             #     "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
