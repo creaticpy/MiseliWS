@@ -216,7 +216,8 @@ function CargarTabs(contenedorDestino, firedElement) {
 function cerrar_tab() {
 
     let elem_tab = document.getElementById('tab-principal').getElementsByClassName("active")
-    let elem_block = document.getElementById('tab-contenido').getElementsByClassName("active")
+    let elem_block = document.getElementById('tab-contenido').querySelectorAll(` div[aria-labelledby="${elem_tab.item(0).id}"]`)
+
     if (elem_tab[0].id === 'Dashboard') {
         alert("Tab Dashboard no puede ser cerrado")
     } else {

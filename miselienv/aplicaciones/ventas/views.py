@@ -13,8 +13,8 @@ from django.views.generic import ListView
 from aplicaciones.rrhh.forms import PersonasForm
 from aplicaciones.rrhh.models import PersonasModel
 
-from .forms import FacturasForm, FacturasDetForm, ClientesForm
-from .models import FacturasModel, FacturasDetModel, ClientesModel
+from .forms import FacturasForm, FacturasDetForm, ClientesForm, ClientesSucursalesForm
+from .models import FacturasModel, FacturasDetModel, ClientesModel, ClientesSucursalesModel
 
 en_formats.DATE_FORMAT = ['%d/%m/%Y', '%d-%m-%Y']
 
@@ -171,7 +171,7 @@ class FacturasView(LoginRequiredMixin, ListView):
         elif request.method == 'POST':
             facturadetformset = inlineformset_factory(FacturasModel, FacturasDetModel, form=FacturasDetForm,
                                                       fk_name='factura', fields=(
-                'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
+                    'articulo', 'nro_item', 'cantidad', 'precio_unitario', 'impuesto', 'desc_larga',), extra=15,
                                                       max_num=15)
 
             # forms.py linea 33, revisar con Anthony, no es la manera de hacerlo.
@@ -242,7 +242,7 @@ class ClientesView(LoginRequiredMixin, ListView):
                 {
                     "defaultContent": "<button type='button' class='editar btn btn-primary'><i charger_function='fm' abrir_en='tab-principal' href='#' url='ventas/modificar_clientes' tab_text='Mod Cliente' class='fa bi-pencil-square'></i></button>"},
                 {
-                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
+                    "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='ventas/borrar_clientes' tab_text='Elim Cliente' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
             ]
             context = {
                 "cols": cols,
@@ -273,20 +273,23 @@ class ClientesView(LoginRequiredMixin, ListView):
     def agregar(request):
         template_name = 'clientes_crearmod.html'
         clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
-                                                 fields=('estado', 'ruc',), extra=1, max_num=1)
-
+                                                fields=('estado', 'ruc',), extra=1, max_num=1)
+        cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
+                                                         form=ClientesSucursalesForm, fk_name='cliente',
+                                                         extra=15, max_num=15)
         if request.method == 'GET':
             formcab = PersonasForm()
             formdet = clientesformset()
-
+            formclisuc = cliente_sucursal_formset()
             ctx = {
                 'form': formcab,
                 'formset': formdet,
+                'formclisuc': formclisuc,
                 'uuid': uuid.uuid4(),
                 'form_uuid': uuid.uuid4(),
                 'section_uuid': uuid.uuid4(),
                 'nav_uuid': uuid.uuid4(),
-                'url_guardar': 'rrhh/agregar_empleados',
+                'url_guardar': 'ventas/agregar_clientes',
 
             }
             return render(request, template_name, ctx)
@@ -296,9 +299,11 @@ class ClientesView(LoginRequiredMixin, ListView):
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
                 formdet = clientesformset(request.POST, instance=formcab)
-                if formdet.is_valid():
+                formclisuc = cliente_sucursal_formset(request.POST, instance=formcab)
+                if formdet.is_valid() and formclisuc.is_valid():
                     formcab.save()
                     formdet.save()
+                    formclisuc.save()
                     return JsonResponse({'text': 'Registro Guardado...', 'type': 'primary', 'timelapse': '3000'})
                 else:
                     return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
@@ -309,58 +314,65 @@ class ClientesView(LoginRequiredMixin, ListView):
 
     def modificar(request):  # update method
         template_name = 'clientes_crearmod.html'
-        empleadosformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
-                                                 fields=('estado', 'ruc',), extra=1, max_num=1)
-
-
+        clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
+                                                fields=('estado', 'ruc',), extra=1, max_num=1)
+        cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
+                                                         form=ClientesSucursalesForm, fk_name='cliente',
+                                                         extra=15, max_num=15)
         ctx = {}
         formcab = PersonasForm()
-        formdet = empleadosformset()
-
+        formdet = clientesformset()
+        formclisuc = cliente_sucursal_formset()
 
         if request.method == 'GET':
             parametros = request.GET
             objeto = PersonasModel.objects.get(pk=parametros['pk'])
-            objemp = ClientesModel.objects.get(pk=parametros['pk'])
+            objcli = ClientesModel.objects.get(pk=parametros['pk'])
+            # objclisuc = ClientesSucursalesModel.objects.get(cliente=parametros['pk'])
             if objeto is not None:
                 formcab = PersonasForm(instance=objeto)
-                formdet = empleadosformset(instance=objeto)
+                formdet = clientesformset(instance=objeto)
+                formclisuc = cliente_sucursal_formset(instance=objcli)
 
                 ctx = {
                     'form': formcab,
                     'formset': formdet,
+                    'formclisuc': formclisuc,
                     'uuid': uuid.uuid4(),
                     'form_uuid': uuid.uuid4(),
                     'section_uuid': uuid.uuid4(),
                     'nav_uuid': uuid.uuid4(),
-                    'url_guardar': 'rrhh/modificar_empleados',
+                    'url_guardar': 'ventas/modificar_clientes',
                 }
                 return render(request, template_name, ctx)
 
         elif request.method == 'POST':
-            empleadosformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
-                                                     fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
-                                                             'contacto_emergencia',), extra=1, max_num=1)
-
+            clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
+                                                    fields=('estado', 'ruc',), extra=1, max_num=1)
+            cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
+                                                             form=ClientesSucursalesForm, fk_name='cliente',
+                                                             extra=15, max_num=15)
 
             obj = PersonasModel.objects.get(pk=request.POST['id'])
             formcab = PersonasForm(request.POST, instance=obj)
-            # formdetben = EmpleadosModel.objects.get(pk=request.POST['id'])
+            formclisuc = ClientesModel.objects.get(pk=request.POST['id'])
 
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
-                formdet = empleadosformset(request.POST, instance=formcab)
-                # formdetben = emplbeneficiosformset(request.POST, instance=formdetben)
-                if formdet.is_valid():
+                formdet = clientesformset(request.POST, instance=formcab)
+                formclisuc = cliente_sucursal_formset(request.POST, instance=formclisuc)
+                if formdet.is_valid() and formclisuc.is_valid():
                     formcab.save()
                     formdet.save()
-
+                    formclisuc.save()
                     return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
+                    return JsonResponse({'text': "Formulario no Guardado" + str(formclisuc.errors), 'type': 'danger',
+                                         'timelapse': '3000', })
 
             else:
-                return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
+                return JsonResponse({'text': "Formulario no Guardado" + str(formclisuc.errors), 'type': 'danger',
+                                     'timelapse': '3000', })
 
         # return render(request, template_name, ctx)
 
@@ -371,13 +383,12 @@ class ClientesView(LoginRequiredMixin, ListView):
             objE = ClientesModel.objects.get(pk=request.POST['id'])
             objP = PersonasModel.objects.get(pk=request.POST['id'])
             if objE is None:
-                return JsonResponse({'error': 'No existe el registro de empleado, consulte con el administrador'})
+                return JsonResponse({'error': 'No existe el registro de cliente, consulte con el administrador'})
             elif objP is None:
                 return JsonResponse({'error': 'No existe el registro de persona, consulte con el administrador'})
             objE = objE.delete()
             objP = objP.delete()
             return JsonResponse({'text': "Registros Borrados", 'type': 'danger', 'timelapse': '3000'})
-
 
         context = {
             "cols": "cols",

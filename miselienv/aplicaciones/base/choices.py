@@ -72,3 +72,9 @@ contadocredito = (
     ('CONT', 'CONTADO'),
     ('CRED', 'CREDITO')
 )
+
+falsoverdadero = (
+    ('true', 'true'),
+    ('false', 'false')
+
+)

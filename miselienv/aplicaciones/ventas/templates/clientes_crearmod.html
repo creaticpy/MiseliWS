@@ -8,27 +8,32 @@
         <div class="row" style="min-width: 620px">
             <ul id="myTab-cliente" class="nav nav-tabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="cabecera-cliente" data-bs-toggle="tab" data-bs-target="#home-tab-pane-cliente"
+                    <button class="nav-link active" id="cabecera-cliente" data-bs-toggle="tab"
+                            data-bs-target="#home-tab-pane-cliente"
                             type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Datos Cliente
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tab-cliente-sucursal" data-bs-toggle="tab" data-bs-target="#profile-tab-pane-cliente-sucursal"
-                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Cliente Sucursal
+                    <button class="nav-link" id="tab-cliente-sucursal" data-bs-toggle="tab"
+                            data-bs-target="#profile-tab-pane-cliente-sucursal"
+                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Cliente
+                        Sucursal
                     </button>
                 </li>
             </ul>
             <div id="myTabContent-cliente" class="tab-content">
-                <div class="tab-pane fade show active" id="home-tab-pane-cliente" role="tabpanel" aria-labelledby="cabecera-cliente"
+                <div class="tab-pane fade show active" id="home-tab-pane-cliente" role="tabpanel"
+                     aria-labelledby="cabecera-cliente"
                      tabindex="0">
 
                     {% include 'clientes_crearmod_cab.html' %}
 
                 </div>
-                <div class="tab-pane fade" id="profile-tab-pane-cliente-sucursal" role="tabpanel" aria-labelledby="tab-cliente-sucursal"
+                <div class="tab-pane fade" id="profile-tab-pane-cliente-sucursal" role="tabpanel"
+                     aria-labelledby="tab-cliente-sucursal"
                      tabindex="0">
 
-                    Aca iran las sucursales
+                    {% include 'clientes_sucursales.html' %}
 
                 </div>
             </div>

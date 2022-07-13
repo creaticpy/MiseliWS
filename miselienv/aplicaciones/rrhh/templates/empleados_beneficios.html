@@ -1,4 +1,7 @@
-<table id="formset" class="form">
+{% load js_functions %}
+{% simple_tag_uuid as formset_id %}
+
+<table id="{{ formset_id }}" class="form">
     {{ formsetbeneficios.management_form }} {# Nooooooooooo olvidar esta linea #}
     {% for form in formsetbeneficios.forms %}
         {% if forloop.first %}

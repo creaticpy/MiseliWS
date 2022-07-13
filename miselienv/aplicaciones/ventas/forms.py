@@ -1,7 +1,8 @@
 from aplicaciones.shared_apps.models import TipDocumentoDetModel
 from aplicaciones.stock.models import SubDepositoModel
-from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel, FacturasDetModel
-
+from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel, FacturasDetModel, \
+    ClientesSucursalesModel
+from base.choices import falsoverdadero
 
 from django import forms
 from django.utils.timezone import now
@@ -44,9 +45,6 @@ class FacturasForm(forms.ModelForm):
     class Meta:
         model = FacturasModel
         fields = '__all__'
-        # widgets = {
-        #     'nro_documento': forms.DateInput(attrs={"class": "col-md-6"}),
-        # }
 
     def clean_conf_cuotas(self):
         conf_cuotas = self.cleaned_data.get("conf_cuotas")
@@ -55,48 +53,6 @@ class FacturasForm(forms.ModelForm):
             raise forms.ValidationError("Debe seleccionar la cantidad de cuotas")
 
         return conf_cuotas
-
-    # cliente   = forms.ModelChoiceField(queryset=ClientesModel.objects.all(), widget=forms.TextInput)
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.helper = FormHelper(self)
-    #     self.helper.form_id = 'form_{uuid}'.format(uuid=uuid.uuid4())
-    #     self.helper.form_class = 'form-inline'  # 'blueForms'
-    #     self.helper.form_style = 'inline'
-    #     self.helper.form_method = 'post'
-    #     self.helper.form_action = ''
-    #     self.helper.form_tag = False  # esto se agrega para que no quite el boton de adentro el formulario
-    #     self.helper.layout = Layout(
-    #         Row(
-    #             Column(Field('tip_documento'), css_class="col-md-2"),
-    #             Column(Field('nro_documento', css_class='text-end'), css_class="col-md-3 "),
-    #             Column(Field('dep_origen'), css_class="col-md-2"),
-    #
-    #
-    #         ),
-    #         Row(
-    #             Column(Field('fecha_documento')),
-    #             Column(Field('fecha_transaccion')),
-    #             Column(Field('periodo')),
-    #             Column(Field('mes')),
-    #         ),
-    #         Row(
-    #             Column(Field('conf_cuotas')),
-    #             Column(Field('contado_credito')),
-    #             Column(Field('moneda')),
-    #             Column(Field('monto_mon_local')),
-    #             Column(Field('saldo_mon_local')),
-    #             Column(Field('cotizacion')),
-    #         ),
-    #         Row(
-    #             Column(Field('cliente')),
-    #             Column(Field('razon_social')),
-    #             Column(Field('ruc')),
-    #         ),
-    #         'observaciones',
-    #
-    #     )
 
 
 class FacturasDetForm(forms.ModelForm):
@@ -108,4 +64,19 @@ class FacturasDetForm(forms.ModelForm):
 class ClientesForm(forms.ModelForm):
     class Meta:
         model = ClientesModel
+        fields = '__all__'
+
+
+class ClientesSucursalesForm(forms.ModelForm):
+    desc_corta = forms.CharField(label='Descripcion', required=True, widget=forms.TextInput(attrs={'style': 'width: 250px'}))
+    observaciones = forms.CharField(label='Observaciones', required=True, widget=forms.TextInput(attrs={'style': 'width: 250px'}))
+    telefono = forms.CharField(label='Telefono', required=True, widget=forms.TextInput(attrs={'style': 'width: 100px'}))
+    celular = forms.CharField(label='Celular', required=True, widget=forms.TextInput(attrs={'style': 'width: 100px'}))
+    direccion = forms.CharField(label='Direccion', required=True, widget=forms.TextInput(attrs={'style': 'width: 300px'}))
+    dir_gps = forms.CharField(label='GPS', required=True, widget=forms.TextInput(attrs={'style': 'width: 300px'}))
+    fec_ingreso = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    encargado = forms.CheckboxSelectMultiple()
+
+    class Meta:
+        model = ClientesSucursalesModel
         fields = '__all__'

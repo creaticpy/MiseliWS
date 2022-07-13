@@ -7,7 +7,7 @@ function replacer(key, value) {
     } else if (key === 'valor') {
 
     }
-    console.log(key.name, value, "key y value en value nro llamada:")
+
     return value
 }
 
@@ -19,10 +19,8 @@ function serialize(form_id) {
 }
 
 function guardarformulario(form_id, url) {
-    console.log(form_id, "esto es form_id")
-    console.log(url, "esto es url")
-    console.log(document.getElementById(form_id), "document.getElementById(form_id).........")
-
+    console.log("esto es document.getElementById(form_id)", document.getElementById(form_id))
+    console.log("document.getElementById(form_id).checkValidity()", document.getElementById(form_id).checkValidity())
     if (document.getElementById(form_id).checkValidity()) {
         let datos = serialize(form_id)
 
