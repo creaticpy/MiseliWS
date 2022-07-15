@@ -5,25 +5,31 @@ from django.conf import settings
 from django.utils.timezone import now
 from aplicaciones.base import choices
 from django.core.exceptions import ValidationError
+from core.models import DocumentosModel
 
 
-class PersonasModel(BaseModel):
+class PersonasModel(DocumentosModel):
     personeria          = models.CharField(max_length=100, blank=True, null=True, choices=choices.personeria)
     nombre              = models.CharField(max_length=100, blank=True, null=True)
     apellido            = models.CharField(max_length=100, blank=True, null=True)
     razon_social        = models.CharField(max_length=200, blank=True, null=True)
     direccion           = models.CharField(max_length=200, blank=True, null=True)
-    ruc                 = models.CharField(max_length=100, blank=True, null=True)
     dir_geo             = models.CharField(max_length=1000, blank=True, null=True, verbose_name="Ubicacion GPS")
     sexo                = models.CharField(max_length=100, blank=True, null=True, choices=choices.sexo)
     fecha_nac_const     = models.DateField(blank=True, null=True, verbose_name="Fecha de nacimiento/constitucion")
-    tipo_documento      = models.CharField(max_length=100, blank=True, null=True, choices=choices.tipodocumento)
-    nro_documento       = models.CharField(max_length=100, blank=True, null=True)
-    fec_venc_doc_iden   = models.DateField(blank=True, null=True)
     nro_celular         = models.CharField(max_length=100, blank=True, null=True)
     nro_whatsapp        = models.CharField(max_length=100, blank=True, null=True)
     email               = models.EmailField(max_length=100)
+    tip_documento_pers  = models.ForeignKey('shared_apps.TipDocumentoDetModel', on_delete=settings.DB_ON_DELETE_TRANS, related_name='personas_tip_doc_pers')
+    nro_documento_pers  = models.CharField(max_length=100, null=False, blank=False, default="CI/DNI, ETC",)  # Ej: para contratos CTS200/4 o facturas: 001-001-2020211
+    fec_venc_doc_pers   = models.DateField(blank=True, null=True)
+    fecha_transaccion   = models.DateField(default=now, null=True, blank=True)  # Fecha creacion_registro
+    observaciones       = models.CharField(max_length=1000, null=True, blank=True)
+
+
     userprofile         = models.ForeignKey(UserProfile, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, related_name='userprofid')
+
+    objects             = models.Manager()
 
     class Meta:
         verbose_name = 'Persona'

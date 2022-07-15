@@ -5,6 +5,7 @@ import uuid
 import pywhatkit
 from django.conf.locale.en import formats as en_formats
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import HttpResponse, JsonResponse
@@ -44,7 +45,6 @@ class FacturasView(LoginRequiredMixin, ListView):
             qs = qs.filter(Q(estado=True),
                            Q(cliente__id__nombre__icontains=filtro) |
                            Q(cliente__id__apellido__icontains=filtro) |
-                           Q(cliente__id__ruc__icontains=filtro) |
                            Q(cliente__id__nro_documento__icontains=filtro) |
                            Q(fecha_documento__icontains=filtro) |
                            Q(periodo__icontains=filtro) |
@@ -215,13 +215,14 @@ class ClientesView(LoginRequiredMixin, ListView):
         def get_queryset(filtro, order_by):
             qs = ClientesModel.objects.all()
             qs = qs.filter(Q(estado=True),
-                           Q(id__nombre__icontains=filtro) |
-                           Q(id__apellido__icontains=filtro) |
-                           Q(id__nro_documento__icontains=filtro) |
-                           Q(id__razon_social__icontains=filtro)
-                           ).values("id", "id__nombre", "id__apellido", "ruc",
-                                    "id__email", "id__direccion", "id__nro_documento",
-                                    "id__nro_celular",
+                           Q(persona__nombre__icontains=filtro) |
+                           Q(persona__apellido__icontains=filtro) |
+                           Q(persona__nro_documento__icontains=filtro) |
+                           Q(persona__razon_social__icontains=filtro)
+                           ).values("id", "persona__nombre", "persona__apellido", "persona__tip_documento__desc_corta",
+                                    "persona__direccion",
+                                    "persona__nro_documento", "persona__nro_documento",
+                                    "persona__nro_celular", "persona__email"
                                     ).order_by("{order_by}".format(order_by=order_by))
             return qs
 
@@ -233,13 +234,14 @@ class ClientesView(LoginRequiredMixin, ListView):
         if tabla_creada == "yes":
             cols = [
                 {"data": "id"},
-                {"data": "id__nombre"},
-                {"data": "id__apellido"},
-                {"data": "ruc"},
-                {"data": "id__email"},
-                {"data": "id__direccion"},
-                {"data": "id__nro_documento"},
-                {"data": "id__nro_celular"},
+                {"data": "persona__nombre"},
+                {"data": "persona__apellido"},
+                {"data": "persona__tip_documento__desc_corta"},
+                {"data": "persona__nro_documento"},
+                {"data": "persona__email"},
+                {"data": "persona__direccion"},
+                {"data": "persona__nro_documento"},
+                {"data": "persona__nro_celular"},
                 {
                     "defaultContent": "<button type='button' class='editar btn btn-primary'><i charger_function='fm' abrir_en='tab-principal' href='#' url='ventas/modificar_clientes' tab_text='Mod Cliente' class='fa bi-pencil-square'></i></button>"},
                 {
@@ -271,16 +273,15 @@ class ClientesView(LoginRequiredMixin, ListView):
         # todo default es llamado cuando un parametro no es convertido a json entonces se lo convierte a str y luego se reprocesa
         return HttpResponse(json.dumps(context, default=myconverter), 'application/json')
 
+    @transaction.atomic
     def agregar(request):
         template_name = 'clientes_crearmod.html'
-        clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
-                                                fields=('estado', 'ruc',), extra=1, max_num=1)
         cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
                                                          form=ClientesSucursalesForm, fk_name='cliente',
                                                          extra=15, max_num=15)
         if request.method == 'GET':
             formcab = PersonasForm()
-            formdet = clientesformset()
+            formdet = ClientesForm()
             formclisuc = cliente_sucursal_formset()
             ctx = {
                 'form': formcab,
@@ -295,43 +296,50 @@ class ClientesView(LoginRequiredMixin, ListView):
             return render(request, template_name, ctx)
 
         if request.method == 'POST':
-            formcab = PersonasForm(request.POST)
-            if formcab.is_valid():
-                formcab = formcab.save(commit=False)
-                formdet = clientesformset(request.POST, instance=formcab)
-                formclisuc = cliente_sucursal_formset(request.POST, instance=formcab)
-                if formdet.is_valid() and formclisuc.is_valid():
-                    formcab.save()
-                    formdet.save()
+            # todo agregar procedimiento que agregue un primer registro en clientes sucursales en caso que el
+            #  usuario no lo haga
+            print(' ESTO ES request.POST', request.POST )
+            cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
+                                                             form=ClientesSucursalesForm, fk_name='cliente',
+                                                             extra=15, max_num=15)
+            formcab = PersonasForm(request.POST, instance=PersonasModel())
+            formdet = ClientesForm(request.POST, instance=ClientesModel())
+            if formcab.is_valid() and formdet.is_valid():
+                formcab = formcab.save()
+                obj = formdet.save(commit=False)
+                obj.persona = formcab
+                formcab.save()
+                obj.save()
+                formclisuc = cliente_sucursal_formset(request.POST, instance=obj)
+                if formclisuc.is_valid():
                     formclisuc.save()
                     return JsonResponse({'text': 'Registro Guardado...', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
+
+                    return JsonResponse({'text': 'Registro no guardado 1', 'type': 'primary', 'timelapse': '3000'})
 
             else:
-                print("FORMULARIO INVALIDO", formcab.errors)
-                return JsonResponse({'text': 'Registro no guardado', 'type': 'primary', 'timelapse': '3000'})
+                return JsonResponse({'text': 'Registro no guardado.... 2', 'type': 'primary', 'timelapse': '3000'})
 
     def modificar(request):  # update method
         template_name = 'clientes_crearmod.html'
-        clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
-                                                fields=('estado', 'ruc',), extra=1, max_num=1)
         cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
                                                          form=ClientesSucursalesForm, fk_name='cliente',
                                                          extra=15, max_num=15)
         ctx = {}
         formcab = PersonasForm()
-        formdet = clientesformset()
+        formdet = ClientesForm()
         formclisuc = cliente_sucursal_formset()
 
         if request.method == 'GET':
             parametros = request.GET
-            objeto = PersonasModel.objects.get(pk=parametros['pk'])
+            v_id = ClientesModel.objects.filter(pk=parametros['pk']).values('persona')[:1].get()['persona']
+            objeto = PersonasModel.objects.get(pk=v_id)
             objcli = ClientesModel.objects.get(pk=parametros['pk'])
             # objclisuc = ClientesSucursalesModel.objects.get(cliente=parametros['pk'])
             if objeto is not None:
                 formcab = PersonasForm(instance=objeto)
-                formdet = clientesformset(instance=objeto)
+                formdet = ClientesForm(instance=objeto)
                 formclisuc = cliente_sucursal_formset(instance=objcli)
 
                 ctx = {
@@ -347,39 +355,36 @@ class ClientesView(LoginRequiredMixin, ListView):
                 return render(request, template_name, ctx)
 
         elif request.method == 'POST':
-            clientesformset = inlineformset_factory(PersonasModel, ClientesModel, form=ClientesForm, fk_name='id',
-                                                    fields=('estado', 'ruc',), extra=1, max_num=1)
             cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
                                                              form=ClientesSucursalesForm, fk_name='cliente',
                                                              extra=15, max_num=15)
 
             obj = PersonasModel.objects.get(pk=request.POST['id'])
-            formcab = PersonasForm(request.POST, instance=obj)
-            formclisuc = ClientesModel.objects.get(pk=request.POST['id'])
+            obj2 = ClientesModel.objects.get(persona=obj)
 
-            if formcab.is_valid():
-                formcab = formcab.save(commit=False)
-                formdet = clientesformset(request.POST, instance=formcab)
-                formclisuc = cliente_sucursal_formset(request.POST, instance=formclisuc)
-                if formdet.is_valid() and formclisuc.is_valid():
+            formcab = PersonasForm(request.POST, instance=obj)
+            formdet = ClientesForm(request.POST, instance=obj2)
+
+            if formcab.is_valid() and formdet.is_valid():
+                formcab = formcab.save()
+                formdet = ClientesForm(request.POST, instance=formcab)
+                formclisuc = cliente_sucursal_formset(request.POST, instance=obj2)
+                if formclisuc.is_valid():
                     formcab.save()
                     formdet.save()
                     formclisuc.save()
                     return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    return JsonResponse({'text': "Formulario no Guardado" + str(formclisuc.errors), 'type': 'danger',
-                                         'timelapse': '3000', })
+                    return JsonResponse({'text': "Formulario no Guardado 1", 'type': 'danger', 'timelapse': '3000', })
 
             else:
-                return JsonResponse({'text': "Formulario no Guardado" + str(formclisuc.errors), 'type': 'danger',
-                                     'timelapse': '3000', })
+                return JsonResponse({'text': "Formulario no Guardado 2", 'type': 'danger', 'timelapse': '3000', })
 
         # return render(request, template_name, ctx)
 
     def borrar(request):
 
         if request.method == 'POST':
-            print("esta pio aqui?")
             objE = ClientesModel.objects.get(pk=request.POST['id'])
             objP = PersonasModel.objects.get(pk=request.POST['id'])
             if objE is None:

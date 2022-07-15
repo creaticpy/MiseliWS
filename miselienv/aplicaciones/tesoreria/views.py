@@ -3,6 +3,7 @@ import json
 import uuid
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -87,6 +88,7 @@ class EntidadesFinancierasView(LoginRequiredMixin, ListView):
         # todo default es llamado cuando un parametro no es convertido a json entonces se lo convierte a str y luego se reprocesa
         return HttpResponse(json.dumps(context, default=myconverter), 'application/json')
 
+    @transaction.atomic
     def agregar(request):
         template_name = 'entidadesfinancieras_crearmod.html'
         entidades_financieras = EntidadesFinancierasModel()
@@ -113,15 +115,17 @@ class EntidadesFinancierasView(LoginRequiredMixin, ListView):
             formdet = EntidadesFinancierasForm(request.POST, instance=EntidadesFinancierasModel())
 
             if formcab.is_valid() and formdet.is_valid():
-                formcab = formcab.save()
+                # formcab = formcab.save(commit=False) # I need this....
+                formcab = formcab.save()  # I don´t need this. because it's all or nothing
                 obj = formdet.save(commit=False)
                 obj.persona = formcab
+                formcab.save()
                 obj.save()
                 return JsonResponse({'text': 'Registro Guardado...', 'type': 'primary', 'timelapse': '3000'})
             else:
                 print('formdet.errors', formdet.errors)
                 return JsonResponse({'text': 'Registro no guardado...', 'type': 'danger', 'timelapse': '3000'})
-
+                # return render(request, template_name, ctx)
         # if formcab.is_valid() and formdet.is_valid(): esto si funciona
         #     formcab = formcab.save() // esto esta equivocado es toodo o nada....
         #     #formdet.id = formcab.id
@@ -167,7 +171,7 @@ class EntidadesFinancierasView(LoginRequiredMixin, ListView):
             obj = PersonasModel.objects.get(pk=request.POST['id'])
             obj2 = EntidadesFinancierasModel.objects.get(persona=request.POST['id'])
             formcab = EntFinancierasPersonasForm(request.POST, instance=obj)
-            formcab = EntFinancierasPersonasForm(request.POST, instance=obj)
+
             if formcab.is_valid():
                 formcab = formcab.save(commit=False)
                 formdet = EntidadesFinancierasForm(request.POST, instance=obj2)

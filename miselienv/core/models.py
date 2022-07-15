@@ -60,7 +60,8 @@ class MaestrosDet(Maestros):
 class PeriodosModel(BaseModel):
     periodo                 = models.PositiveIntegerField(null=True, blank=True)  # solo año 2022
     mes                     = models.PositiveIntegerField(null=True, blank=True)  # mes/año 012022 - 122023 -etc
-    fecha_documento         = models.DateField(default=now)  # Fecha emision del documento
+    fecha_documento         = models.DateField(default=now, null=True, blank=True)  # Fecha emision del documento
+    fecha_transaccion       = models.DateField(default=now, null=True, blank=True)  # Fecha creacion_registro
 
     class Meta:
         abstract = True
@@ -79,11 +80,11 @@ class DocumentosManager(models.Manager):
 
 
 class DocumentosModel(PeriodosModel):
-    tip_documento       = models.ForeignKey('shared_apps.TipDocumentoDetModel', on_delete=settings.DB_ON_DELETE_TRANS, default=1)
-    nro_documento       = models.CharField(max_length=100, null=False, blank=False, default="Cargar Nro Documento",
-                                           help_text="Los Nros de documentos legales deben tener el siguiente formato: 0010010000001")  # Ej: para contratos CTS200/4 o facturas: 001-001-2020211
-    fecha_transaccion   = models.DateField(default=now, null=False, blank=False)  # Fecha creacion_registro
-    observaciones       = models.CharField(max_length=1000, null=True, blank=True)
+    tip_documento    = models.ForeignKey('shared_apps.TipDocumentoDetModel', on_delete=settings.DB_ON_DELETE_TRANS, default=1)
+    nro_documento    = models.CharField(max_length=100, null=False, blank=False, default="Cargar Nro Documento",
+                                         help_text="Los Nros de documentos legales deben tener el siguiente formato: 0010010000001")  # Ej: para contratos CTS200/4 o facturas: 001-001-2020211
+    fec_venc_doc     = models.DateField(blank=True, null=True)
+    observaciones    = models.CharField(max_length=1000, null=True, blank=True)
 
     object_by_sucursal  = DocumentosManager()
 
@@ -91,14 +92,13 @@ class DocumentosModel(PeriodosModel):
         abstract = True
 
 
-        #  todo esto debe ser filtrado por sucursal, debemos ver la manera de hacer que
-        #   solo quien pertenezca a la sucursal correspondiente pueda ver el documento
+        #  todo esto debe ser filtrado por sucursal, debemos ver la manera de hacer que solo quien pertenezca a la sucursal correspondiente pueda ver el documento
 
 
 #  todo siempre dep_origen indica salida de articulo, siempre dep_destino indica  entrada de articulo
 class CabMovArticulosModel(DocumentosModel):
     dep_origen = models.ForeignKey('stock.SubDepositoModel', default=1, blank=True, null=True, verbose_name="Deposito", on_delete=settings.DB_ON_DELETE_TRANS, related_name='%(app_label)s_%(class)sorig')
-    dep_destino = models.ForeignKey('stock.SubDepositoModel',default=1, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, related_name='%(app_label)s_%(class)sdest')
+    dep_destino = models.ForeignKey('stock.SubDepositoModel', default=1, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, related_name='%(app_label)s_%(class)sdest')
     observaciones = models.CharField(max_length=1000, blank=True, null=True)
 
     class Meta:

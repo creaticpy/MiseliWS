@@ -22,7 +22,7 @@ class RucsModel(BaseModel):
         verbose_name_plural = 'RUCs'
 
     def __str__(self):
-        return '{razon_social}, {ruc}'.format(ruc=self.ruc_completo, razon_social=self.razon_social)
+        return '{razon_social}'.format(ruc=self.ruc_completo, razon_social=self.razon_social)
 
 
 class PaisModel(Maestros):

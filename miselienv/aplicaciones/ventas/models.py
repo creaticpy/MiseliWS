@@ -37,20 +37,24 @@ class ConfVentasModel(BaseModel):
         super().clean()
 
 
-class ClientesModel(BaseModel):
-    id      = models.OneToOneField(PersonasModel, db_column='id', primary_key=True, on_delete=settings.DB_ON_DELETE_TRANS)
-    ruc     = models.CharField(max_length=100, blank=True, null=True)
+class ClientesModel(Maestros):
+    persona      = models.OneToOneField(PersonasModel, on_delete=settings.DB_ON_DELETE_TRANS)
+
+    objects      = models.Manager()
+
+    def __str__(self):
+        return '{id} --> Este es el id de Cliente'.format(id=self.id)
 
     class Meta:
         verbose_name = 'cliente'
         verbose_name_plural = 'clientes'
 
     def __str__(self):
-        return '{nombre}, {apellido}'.format(nombre=self.id.nombre, apellido=self.id.apellido)
+        return '{nombre}, {apellido}'.format(nombre=self.persona.nombre, apellido=self.persona.apellido)
 
 
 class ClientesSucursalesModel(Maestros):
-    cliente         = models.ForeignKey(ClientesModel, on_delete=settings.DB_ON_DELETE_TRANS)
+    cliente         = models.ForeignKey(ClientesModel, on_delete=settings.DB_ON_DELETE_TRANS, related_name='clientessucursalesmodel_clientemodel')
     fecha_ingreso   = models.DateField(default=now, blank=False, null=False)
     observaciones   = models.CharField(max_length=1000, blank=True, null=True)
     telefono        = models.CharField(max_length=100, blank=True, null=True)
@@ -75,7 +79,6 @@ class PedidosModel(CabMovArticulosModel):
     moneda          = models.ForeignKey(MonedaModel, on_delete=settings.DB_ON_DELETE_TRANS, default=1)
     cotizacion      = models.PositiveIntegerField(default=FacturasPrecargas.cotizacion)  # todo por ahora cero, luego debe estirar de la tabla
     monto_mon_local = models.PositiveIntegerField(default=0)
-    ruc             = models.CharField(max_length=100, default="")
     razon_social    = models.CharField(max_length=100, default="")
     realizado_por   = models.ForeignKey(PersonasModel, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS)
 
@@ -132,7 +135,6 @@ class RemisionesModel(CabMovArticulosModel):
     moneda          = models.ForeignKey(MonedaModel, on_delete=settings.DB_ON_DELETE_TRANS, default=1)
     cotizacion      = models.PositiveIntegerField(default=FacturasPrecargas.cotizacion)  # todo por ahora cero, luego debe estirar de la tabla
     monto_mon_local = models.PositiveIntegerField(default=0)
-    ruc             = models.CharField(max_length=100, default="")
     razon_social    = models.CharField(max_length=100, default="")
 
     objects         = models.Manager()
@@ -200,7 +202,6 @@ class FacturasModel(CabMovArticulosModel):
     cotizacion      = models.PositiveIntegerField(default=FacturasPrecargas.cotizacion)  # todo por ahora cero, luego debe estirar de la tabla
     monto_mon_local = models.PositiveIntegerField(default=0, verbose_name="Monto")
     saldo_mon_local = models.PositiveIntegerField(default=0, verbose_name="Saldo")
-    ruc             = models.CharField(max_length=100, default="")
     razon_social    = models.CharField(max_length=100, default="")
 
     objects         = models.Manager()

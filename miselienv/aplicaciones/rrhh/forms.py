@@ -1,7 +1,10 @@
 from django import forms
 from django.utils.timezone import now
 from aplicaciones.base.choices import sexo, tipodocumento, personeria
+from aplicaciones.shared_apps.models import TipDocumentoDetModel
+
 from .models import EmpleadosModel, PersonasModel, EmpleadosBeneficiosModel
+from django.core.validators import RegexValidator
 
 
 class EmpleadosForm(forms.ModelForm):
@@ -15,24 +18,28 @@ class EmpleadosForm(forms.ModelForm):
         model = EmpleadosModel
         fields = '__all__'
 
+# https://regexr.com/
+
 
 class PersonasForm(forms.ModelForm):
-    id = forms.IntegerField(required=False)
-    personeria = forms.ChoiceField(choices=personeria)
-    nombre = forms.CharField(max_length=100, required=True)
-    apellido = forms.CharField(max_length=100, required=True)
-    razon_social = forms.CharField(max_length=200, required=True)
-    direccion = forms.CharField(max_length=200, required=True)
-    ruc = forms.CharField(max_length=100, required=False)
-    dir_geo = forms.CharField(max_length=1000, required=False)
-    sexo = forms.ChoiceField(required=False, choices=sexo, initial=None)
-    fecha_nac_const = forms.DateField(initial=now(), required=True, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
-    tipo_documento = forms.ChoiceField(required=True, choices=tipodocumento)
-    nro_documento = forms.CharField(max_length=100, required=False)
-    fec_venc_doc_iden = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
-    nro_celular = forms.CharField(max_length=100, required=False)
-    nro_whatsapp = forms.CharField(max_length=100, required=False)
-    email = forms.EmailField(label="Correo Personal")
+    id                  = forms.IntegerField(required=False)
+    personeria          = forms.ChoiceField(choices=personeria)
+    nombre              = forms.CharField(max_length=100, required=True)
+    apellido            = forms.CharField(max_length=100, required=True)
+    razon_social        = forms.CharField(max_length=200, required=True)
+    direccion           = forms.CharField(max_length=200, required=True)
+    dir_geo             = forms.CharField(max_length=1000, label="GPS",  required=False)
+    sexo                = forms.ChoiceField(choices=sexo, required=False)
+    fecha_nac_const     = forms.DateField(initial=now(), required=False, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    tip_documento_pers  = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(tip_documento="4").exclude(id=11), label="Tip Doc")
+    nro_documento_pers  = forms.CharField(max_length=100, required=False, label='Nro Documento Personal',)
+    fec_venc_doc_pers   = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    tip_documento       = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(id="11"), label="RUC")
+    nro_documento       = forms.CharField(max_length=100, required=False, validators=[RegexValidator("(\d){5,8}-(\d)", message="not valid")])
+    fec_venc_doc        = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}), required=False)
+    nro_celular         = forms.CharField(max_length=100, required=False)
+    nro_whatsapp        = forms.CharField(max_length=100, required=False)
+    email               = forms.EmailField(label="Correo Personal")
 
     class Meta:
         model = PersonasModel

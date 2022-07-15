@@ -29,8 +29,7 @@ class RemisionesForm(forms.ModelForm):
 
 
 class FacturasForm(forms.ModelForm):
-    # error_css_class = 'error'
-    # required_css_class = 'required'
+
     id = forms.IntegerField(required=False)
     tip_documento = forms.ModelChoiceField(queryset=TipDocumentoDetModel.objects.filter(desc_corta="FV"), initial="FV",
                                            label="Tip Doc")
@@ -62,19 +61,27 @@ class FacturasDetForm(forms.ModelForm):
 
 
 class ClientesForm(forms.ModelForm):
+    id          = forms.IntegerField(required=False)
+    estado      = forms.CheckboxInput()
+    persona     = forms.IntegerField(required=False)
+    desc_corta  = forms.CharField(max_length=100, required=False)
+    desc_larga  = forms.CharField(max_length=100, required=False)
+
     class Meta:
         model = ClientesModel
         fields = '__all__'
 
 
 class ClientesSucursalesForm(forms.ModelForm):
+    id              = forms.IntegerField(required=False)
+    cliente         = forms.CheckboxSelectMultiple()
     desc_corta      = forms.CharField(label='Descripcion', required=True, widget=forms.TextInput(attrs={'style': 'width: 250px'}))
-    fec_ingreso     = forms.DateField(required=True, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
-    observaciones   = forms.CharField(label='Observaciones', widget=forms.TextInput(attrs={'style': 'width: 250px'}))
-    telefono        = forms.CharField(label='Telefono', widget=forms.TextInput(attrs={'style': 'width: 100px'}))
-    celular         = forms.CharField(label='Celular', widget=forms.TextInput(attrs={'style': 'width: 100px'}))
-    direccion       = forms.CharField(label='Direccion', widget=forms.TextInput(attrs={'style': 'width: 300px'}))
-    dir_gps         = forms.CharField(label='GPS', widget=forms.TextInput(attrs={'style': 'width: 300px'}))
+    fecha_ingreso   = forms.DateField(required=True, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    observaciones   = forms.CharField(label='Observaciones', widget=forms.TextInput(attrs={'style': 'width: 250px'}), required=False)
+    telefono        = forms.CharField(label='Telefono', widget=forms.TextInput(attrs={'style': 'width: 100px'}), required=False)
+    celular         = forms.CharField(label='Celular', widget=forms.TextInput(attrs={'style': 'width: 100px'}), required=False)
+    direccion       = forms.CharField(label='Direccion', widget=forms.TextInput(attrs={'style': 'width: 300px'}), required=False)
+    dir_gps         = forms.CharField(label='GPS', widget=forms.TextInput(attrs={'style': 'width: 300px'}), required=False)
     encargado       = forms.CheckboxSelectMultiple()
 
     class Meta:

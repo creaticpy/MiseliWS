@@ -31,13 +31,19 @@ function guardarformulario(form_id, url) {
         })
             .then(function (res) {
 
+                // if (res.contentType == 'html') {
+                //     //text1error.innerHTML = 'You must fill out field.'
+                //     form.innerHTML = res;
+                // }
+
                 alert_message(text = res.data['text'], type = res.data['type'], timelapse = res.data['timelapse'])
                 // document.getElementById(form_id).reset(); funciona correctamente... ver cuando aplicar.
             }).catch(function (err) {
             console.log(err)
         })
     } else {
-        console.log("el formulario no es valido")
+        console.log("Formulario invalido......")
+        document.getElementById(form_id).reportValidity();
     }
 }
 

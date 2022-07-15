@@ -26,18 +26,19 @@ post_save.connect(FacturaDetSignal.method_post_save, sender=FacturasDetModel, di
 post_delete.connect(receiver=FacturaDetSignal.method_post_delete, sender=FacturasDetModel)
 
 
-class ClienteSignal:
-    @staticmethod
-    def method_post_save(instance, sender, *args, **kwargs):
-        if kwargs['created']:
-            if not ClientesSucursalesModel.objects.filter(cliente=instance)[:1].exists():
-                asd = ClientesSucursalesModel.objects.create(cliente=instance,
-                                                             desc_corta=instance.id.nombre,
-                                                             direccion=instance.id.direccion,
-                                                             encargado=instance.id,
-                                                             observaciones="",
-                                                             )
-                asd.save()
-
-
-post_save.connect(ClienteSignal.method_post_save, sender=ClientesModel, dispatch_uid="post_saveClientesModel")
+# Esto fue incialmente para que el cliente no tuviera que estar cargando la primera sucursal
+# class ClienteSignal:
+#     @staticmethod
+#     def method_post_save(instance, sender, *args, **kwargs):
+#         if kwargs['created']:
+#             if not ClientesSucursalesModel.objects.filter(cliente=instance)[:1].exists():
+#                 asd = ClientesSucursalesModel.objects.create(cliente=instance,
+#                                                              desc_corta=instance.persona.nombre,
+#                                                              direccion=instance.persona.direccion,
+#                                                              encargado=instance.persona,
+#                                                              observaciones="",
+#                                                              )
+#                 asd.save()
+#
+#
+# post_save.connect(ClienteSignal.method_post_save, sender=ClientesModel, dispatch_uid="post_saveClientesModel")
