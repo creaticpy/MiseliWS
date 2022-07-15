@@ -13,14 +13,11 @@ function replacer(key, value) {
 
 // https://gomakethings.com/serializing-form-data-with-the-vanilla-js-formdata-object/
 function serialize(form_id) {
-    let obj = {};
     let formData = new FormData(document.getElementById(form_id));
     return formData
 }
 
 function guardarformulario(form_id, url) {
-    console.log("esto es document.getElementById(form_id)", document.getElementById(form_id))
-    console.log("document.getElementById(form_id).checkValidity()", document.getElementById(form_id).checkValidity())
     if (document.getElementById(form_id).checkValidity()) {
         let datos = serialize(form_id)
 
@@ -35,7 +32,7 @@ function guardarformulario(form_id, url) {
             .then(function (res) {
 
                 alert_message(text = res.data['text'], type = res.data['type'], timelapse = res.data['timelapse'])
-
+                // document.getElementById(form_id).reset(); funciona correctamente... ver cuando aplicar.
             }).catch(function (err) {
             console.log(err)
         })

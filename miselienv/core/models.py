@@ -17,7 +17,7 @@ class BaseModel(models.Model):
     fechaModificacion   = models.DateTimeField(auto_now=True, db_index=True, null=True, blank=True, editable=False)
     historico_cambios   = models.JSONField(null=True, blank=True, default=dict, editable=False,
                                          verbose_name="Historico de actualizaciones del campo.")
-    estado              = models.BooleanField(default=True)
+    estado              = models.BooleanField(default=True, blank=False, null=False)
     borrado_logico      = models.BooleanField(default=False, editable=False)
 
     class Meta:

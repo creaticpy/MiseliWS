@@ -6,9 +6,9 @@ from .models import EmpleadosModel, PersonasModel, EmpleadosBeneficiosModel
 
 class EmpleadosForm(forms.ModelForm):
     id = forms.IntegerField(required=False)
-    fecha_ingreso = forms.DateField(initial=now(), widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    fecha_ingreso_ips = forms.DateField(initial=now(), widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}), label='Ingreso IPS')
     fecha_egreso = forms.DateField(required=False, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
-    email = forms.EmailField()
+    email = forms.EmailField(label="Correo Laboral")
     estado = forms.CheckboxSelectMultiple()
 
     class Meta:
@@ -25,14 +25,14 @@ class PersonasForm(forms.ModelForm):
     direccion = forms.CharField(max_length=200, required=True)
     ruc = forms.CharField(max_length=100, required=False)
     dir_geo = forms.CharField(max_length=1000, required=False)
-    sexo = forms.ChoiceField(required=True, choices=sexo)
+    sexo = forms.ChoiceField(required=False, choices=sexo, initial=None)
     fecha_nac_const = forms.DateField(initial=now(), required=True, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
     tipo_documento = forms.ChoiceField(required=True, choices=tipodocumento)
     nro_documento = forms.CharField(max_length=100, required=False)
     fec_venc_doc_iden = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
     nro_celular = forms.CharField(max_length=100, required=False)
     nro_whatsapp = forms.CharField(max_length=100, required=False)
-    email = forms.EmailField()
+    email = forms.EmailField(label="Correo Personal")
 
     class Meta:
         model = PersonasModel

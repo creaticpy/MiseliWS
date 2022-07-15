@@ -51,7 +51,7 @@ class ClientesModel(BaseModel):
 
 class ClientesSucursalesModel(Maestros):
     cliente         = models.ForeignKey(ClientesModel, on_delete=settings.DB_ON_DELETE_TRANS)
-    fec_ingreso     = models.DateField(default=now, blank=False, null=False)
+    fecha_ingreso   = models.DateField(default=now, blank=False, null=False)
     observaciones   = models.CharField(max_length=1000, blank=True, null=True)
     telefono        = models.CharField(max_length=100, blank=True, null=True)
     celular         = models.CharField(max_length=100, blank=True, null=True)

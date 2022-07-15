@@ -2,6 +2,7 @@ import datetime
 import json
 import uuid
 
+import pywhatkit
 from django.conf.locale.en import formats as en_formats
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -290,7 +291,6 @@ class ClientesView(LoginRequiredMixin, ListView):
                 'section_uuid': uuid.uuid4(),
                 'nav_uuid': uuid.uuid4(),
                 'url_guardar': 'ventas/agregar_clientes',
-
             }
             return render(request, template_name, ctx)
 

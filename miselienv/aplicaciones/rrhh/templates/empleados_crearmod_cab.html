@@ -1,7 +1,9 @@
 <div class="col-12 d-grid gap-2" style="min-width: 310px">
-                <div class="row g-1 align-items-center ">
+                <div class="row g-1 align-items-center">
                     <div hidden>
                         {{ form.id }}
+                        {{ formdet.persona }}
+
                     </div>
                     <div class="row" style="width: 20%; min-width: 160px;">
                         {{ form.personeria.label }}
@@ -12,7 +14,7 @@
                         {{ form.sexo }}
                     </div>
                 </div>
-                <div class="row g-1 align-items-center ">
+                <div class="row g-1 align-items-center">
                     <div class="row" style="width: 30%; min-width: 160px;">
                         {{ form.nombre.label }}
                         {{ form.nombre }}

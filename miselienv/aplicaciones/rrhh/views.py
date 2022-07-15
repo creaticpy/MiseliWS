@@ -41,7 +41,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                            Q(id__apellido__icontains=filtro) |
                            Q(id__nro_documento__icontains=filtro) |
                            Q(id__razon_social__icontains=filtro)
-                           ).values("id", "id__nombre", "id__apellido", "fecha_ingreso",
+                           ).values("id", "id__nombre", "id__apellido", "fecha_ingreso_ips",
                                     "fecha_egreso", "id__nro_documento", "id__direccion", "id__email",
                                     "id__nro_celular",
                                     ).order_by("{order_by}".format(order_by=order_by))
@@ -57,7 +57,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                 {"data": "id"},
                 {"data": "id__nombre"},
                 {"data": "id__apellido"},
-                {"data": "fecha_ingreso"},
+                {"data": "fecha_ingreso_ips"},
                 {"data": "fecha_egreso"},
                 {"data": "id__email"},
                 {"data": "id__direccion"},
@@ -66,10 +66,6 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                     "defaultContent": "<button type='button' class='editar btn btn-primary'><i charger_function='fm' abrir_en='tab-principal' href='#' url='rrhh/modificar_empleados' tab_text='Mod Empleado' class='fa bi-pencil-square'></i></button>"},
                 {
                     "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
-
-            #     "defaultContent": "<button type='button' class='editar btn btn-primary' href='#' url='rrhh/modificar_empleados' tab_text='Mod Empleado'><i class='fa bi-pencil-square'></i></button>"},
-            # {
-            #     "defaultContent": "<button type='button' class='eliminar btn btn-danger' href='#' url='rrhh/borrar_empleados' tab_text='Elim Empleado' data-toggle='modal' data-target='#modalEliminar'><i class='fa bi-trash'></i></button>"},
 
             ]
             context = {
@@ -89,7 +85,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
         list_data = []
 
         for indice, valor in enumerate(data[inicio:inicio + fin], inicio):
-            valor["fecha_ingreso"] = valor["fecha_ingreso"].strftime("%d/%m/%Y")
+            valor["fecha_ingreso_ips"] = valor["fecha_ingreso_ips"].strftime("%d/%m/%Y")
             list_data.append(valor)
 
         context = {
@@ -102,7 +98,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
     def agregar(request):
         template_name = 'empleados_crearmod.html'
         empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
-                                                 fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                 fields=('estado', 'fecha_ingreso_ips', 'fecha_egreso', 'email',
                                                          'contacto_emergencia',), extra=1, max_num=1)
         emplbeneficiosformset = inlineformset_factory(EmpleadosModel, EmpleadosBeneficiosModel, form=EmpleadosBeneficiosForm, fk_name='empleado',
                                                  fields=('estado', 'beneficio',), extra=15, max_num=15)
@@ -147,7 +143,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
     def modificar(request):  # update method
         template_name = 'empleados_crearmod.html'
         empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
-                                                 fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                 fields=('estado', 'fecha_ingreso_ips', 'fecha_egreso', 'email',
                                                          'contacto_emergencia',), extra=1, max_num=1)
         emplbeneficiosformset = inlineformset_factory(EmpleadosModel, EmpleadosBeneficiosModel, form=EmpleadosBeneficiosForm, fk_name='empleado',
                                                  fields=('estado', 'beneficio',), extra=15, max_num=15)
@@ -179,7 +175,7 @@ class EmpleadosView(LoginRequiredMixin, ListView):
 
         elif request.method == 'POST':
             empleadosformset = inlineformset_factory(PersonasModel, EmpleadosModel, form=EmpleadosForm, fk_name='id',
-                                                     fields=('estado', 'fecha_ingreso', 'fecha_egreso', 'email',
+                                                     fields=('estado', 'fecha_ingreso_ips', 'fecha_egreso', 'email',
                                                              'contacto_emergencia',), extra=1, max_num=1)
             emplbeneficiosformset = inlineformset_factory(EmpleadosModel, EmpleadosBeneficiosModel,
                                                           form=EmpleadosBeneficiosForm, fk_name='empleado',

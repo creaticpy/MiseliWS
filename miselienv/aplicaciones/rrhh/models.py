@@ -91,8 +91,9 @@ class EmpleadosBeneficiosModel(BaseModel):
 class EmpleadosModel(BaseModel):
     id                  = models.OneToOneField(PersonasModel, on_delete=settings.DB_ON_DELETE_TRANS, primary_key=True, db_column='id', related_name='idpersona')
     fecha_ingreso       = models.DateField(default=now, blank=False, null=False, editable=True)
+    fecha_ingreso_ips   = models.DateField(default=now, blank=False, null=False, editable=True)
     fecha_egreso        = models.DateField(blank=True, null=True)
-    email               = models.EmailField(blank=True, null=True)
+    email               = models.EmailField(blank=True, null=True, verbose_name="Correo Laboral")
     contacto_emergencia = models.ForeignKey(PersonasModel, blank=True, null=True, on_delete=settings.DB_ON_DELETE_TRANS, verbose_name='Contacto de Emergencia', related_name='contactoemergencia')
     empleado_sucursal   = models.ManyToManyField(SucursalesModel, through=EmpleadosSucursalesModel)
     beneficios = models.ManyToManyField(BeneficiosModel, through="EmpleadosBeneficiosModel")

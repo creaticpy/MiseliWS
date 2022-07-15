@@ -53,6 +53,7 @@ SHARED_APPS = (
     'aplicaciones.rrhh',
     'aplicaciones.servicios',
     'aplicaciones.stock',
+    'aplicaciones.tesoreria',
     'aplicaciones.ventas',
 
     # everything below here is optional
@@ -61,8 +62,6 @@ SHARED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
-    'crispy_forms',
-    'crispy_bootstrap5',
 
     'django.contrib.staticfiles',
 
@@ -96,7 +95,9 @@ TENANT_APPS = (
     'aplicaciones.rrhh',
     'aplicaciones.servicios',
     'aplicaciones.stock',
+    'aplicaciones.tesoreria',
     'aplicaciones.ventas',
+
 )
 
 

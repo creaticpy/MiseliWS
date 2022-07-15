@@ -78,3 +78,9 @@ falsoverdadero = (
     ('false', 'false')
 
 )
+
+entidadfinanciera = (
+    ('BANCO', 'BANCO'),
+    ('FINANCIERA', 'FINANCIERA'),
+    ('COOPERATIVA', 'COOPERATIVA'),
+)

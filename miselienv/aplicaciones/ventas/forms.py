@@ -2,7 +2,7 @@ from aplicaciones.shared_apps.models import TipDocumentoDetModel
 from aplicaciones.stock.models import SubDepositoModel
 from aplicaciones.ventas.models import PedidosModel, FacturasModel, RemisionesModel, ClientesModel, FacturasDetModel, \
     ClientesSucursalesModel
-from base.choices import falsoverdadero
+
 
 from django import forms
 from django.utils.timezone import now
@@ -68,14 +68,14 @@ class ClientesForm(forms.ModelForm):
 
 
 class ClientesSucursalesForm(forms.ModelForm):
-    desc_corta = forms.CharField(label='Descripcion', required=True, widget=forms.TextInput(attrs={'style': 'width: 250px'}))
-    observaciones = forms.CharField(label='Observaciones', required=True, widget=forms.TextInput(attrs={'style': 'width: 250px'}))
-    telefono = forms.CharField(label='Telefono', required=True, widget=forms.TextInput(attrs={'style': 'width: 100px'}))
-    celular = forms.CharField(label='Celular', required=True, widget=forms.TextInput(attrs={'style': 'width: 100px'}))
-    direccion = forms.CharField(label='Direccion', required=True, widget=forms.TextInput(attrs={'style': 'width: 300px'}))
-    dir_gps = forms.CharField(label='GPS', required=True, widget=forms.TextInput(attrs={'style': 'width: 300px'}))
-    fec_ingreso = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
-    encargado = forms.CheckboxSelectMultiple()
+    desc_corta      = forms.CharField(label='Descripcion', required=True, widget=forms.TextInput(attrs={'style': 'width: 250px'}))
+    fec_ingreso     = forms.DateField(required=True, widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}))
+    observaciones   = forms.CharField(label='Observaciones', widget=forms.TextInput(attrs={'style': 'width: 250px'}))
+    telefono        = forms.CharField(label='Telefono', widget=forms.TextInput(attrs={'style': 'width: 100px'}))
+    celular         = forms.CharField(label='Celular', widget=forms.TextInput(attrs={'style': 'width: 100px'}))
+    direccion       = forms.CharField(label='Direccion', widget=forms.TextInput(attrs={'style': 'width: 300px'}))
+    dir_gps         = forms.CharField(label='GPS', widget=forms.TextInput(attrs={'style': 'width: 300px'}))
+    encargado       = forms.CheckboxSelectMultiple()
 
     class Meta:
         model = ClientesSucursalesModel
