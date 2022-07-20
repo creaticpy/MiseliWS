@@ -298,7 +298,7 @@ class ClientesView(LoginRequiredMixin, ListView):
         if request.method == 'POST':
             # todo agregar procedimiento que agregue un primer registro en clientes sucursales en caso que el
             #  usuario no lo haga
-            print(' ESTO ES request.POST', request.POST )
+            print(' ESTO ES request.POST', request.POST)
             cliente_sucursal_formset = inlineformset_factory(ClientesModel, ClientesSucursalesModel,
                                                              form=ClientesSucursalesForm, fk_name='cliente',
                                                              extra=15, max_num=15)

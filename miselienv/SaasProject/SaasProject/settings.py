@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# ALLOWED_HOSTS = ['143.198.163.11', '.localhost', 'localhost', '0.0.0.0', '127.0.0.1']
+# ALLOWED_HOSTS = ['192.168.0.', '.localhost', 'localhost', '0.0.0.0', '127.0.0.1']
 
 # Application definition
 

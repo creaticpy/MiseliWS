@@ -83,13 +83,13 @@ function load_tables(dir_url, cols, id_tabla, url_agregar_registro, block, tab_t
 
 }
 
-function AgregarTab(abrir_en, descripcion) {
-    let tab = document.getElementById(abrir_en) // para estos ejemplos, abriremos en tab-principal
-    let tab_contenido = document.getElementById("tab-contenido")
+function AgregarTab(abrir_en, descripcion) { // aqui tenemos que agregar la opcion de MODAL
     let html_cab = ''
     let html_det = ''
-    let randomNro = randomNumber()
     let randomId = randomNumber()
+    let randomNro = randomNumber()
+    let tab = document.getElementById(abrir_en) // para estos ejemplos, abriremos en tab-principal
+    let tab_contenido = document.getElementById("tab-contenido")
 
     // cabecera
     html_cab += '<li class="nav-item" role="presentation">'

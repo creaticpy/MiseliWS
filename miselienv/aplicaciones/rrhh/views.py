@@ -196,10 +196,11 @@ class EmpleadosView(LoginRequiredMixin, ListView):
                     formdetben.save()
                     return JsonResponse({'text': 'Guardado correctamente', 'type': 'primary', 'timelapse': '3000'})
                 else:
-                    return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
+                    return JsonResponse({'text': "Formulario no Guardado 1", 'type': 'danger', 'timelapse': '3000'})
 
             else:
-                return JsonResponse({'text': "Formulario no Guardado", 'type': 'danger', 'timelapse': '3000'})
+                print(formcab.errors, "formcab")
+                return JsonResponse({'text': "Formulario no Guardado 2", 'type': 'danger', 'timelapse': '3000'})
 
         # return render(request, template_name, ctx)
 

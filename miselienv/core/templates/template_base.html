@@ -21,9 +21,9 @@
 
 
     <style> {#crear y mover en el css correspondiente #}
-        th.dpass, td.dpass {
-            display: none;
-        }
+    th.dpass, td.dpass {
+        display: none;
+    }
 
     </style>
 
@@ -31,9 +31,11 @@
 <body>
 
 {% if request.user.is_authenticated %}
-
     {#    <section class="ccontenedorindex" style="background: #0dcaf0">#}
     {#https://www.codeply.com/go/rgHEL6DW12/complex-grid-layout-bootstrap#}
+    <div id="modal-container">
+
+    </div>
     <div class="container-fluid" style="height: 100vh">
         <div class="row h-100">
             <div class="row head" style="height: 80px">
@@ -46,6 +48,12 @@
                     {% include 'menu.html' %}
                 </div>
                 <div class="col-lg-10">
+                    <div id="contenedor-mensajes" class="row w-100">
+                        <div id="alert-box" class="position-fixed"
+                             style="background: #ffedb3; margin-t3op: 100px; margin-lseft: 400px; min-height: 50px">
+                            asdfdsaf
+                        </div>
+                    </div>
                     <div class="row h-100">
                         <div class="col-lg-11">
                             <div class="row">
@@ -53,14 +61,12 @@
                                     {% include 'tabs.html' %}
                                 </div>
                                 <div class="col-lg-2">
-                                    Aqui pondremos otro menu
+
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-1">
-                            <div id="alert-box" class="">
 
-                            </div>
 
                         </div>
                     </div>
@@ -70,32 +76,6 @@
     </div>
 
 
-
-
-
-    {#        <section id="section_id" class="chead">#}
-    {#            Esto es el nombre de la empresa: {% nombre_empresa %}#}
-    {#            esto es head#}
-    {#        </section>#}
-    {#        <section class="cmenu toggle">#}
-    {#            {% include 'menu.html' %}#}
-    {#        </section>#}
-    {#        <section class="ccontenido">#}
-    {#            {% include 'tabs.html' %}#}
-    {#        </section>#}
-    {##}
-    {#        <section class="cfooter">#}
-    {##}
-    {#            <a href="#miModala">Abrir Modal</a>#}
-    {#            <div id="miModala" class="modala">#}
-    {#                <div class="modala-contenido">#}
-    {#                    <a href="#">X</a>#}
-    {#                    <h2>Mi primer Modal</h2>#}
-    {#                    <p>Este es mi primera ventana modal sin utilizar JavaScript.</p>#}
-    {#                </div>#}
-    {#            </div>#}
-    {##}
-    {#        </section>#}
 
     </section>
 
